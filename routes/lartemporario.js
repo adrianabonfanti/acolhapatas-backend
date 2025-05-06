@@ -51,7 +51,6 @@ router.post("/", async (req, res) => {
 
     await novoLar.save();
 
-    // Enviar e-mail de notificação
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -72,7 +71,6 @@ router.post("/", async (req, res) => {
         <p>Esse cadastro aguarda sua aprovação no painel do sistema.</p>
       `,
     });
-    
 
     res.status(201).json({ message: "Cadastro enviado com sucesso." });
   } catch (err) {
