@@ -61,8 +61,8 @@ router.post("/", async (req, res) => {
     });
 
     await transporter.sendMail({
-      from: '"AcolhaPatas" <' + process.env.EMAIL_USER + '>',
-      to: "adrianahbonfanti@gmail.com",
+      from: `"AcolhaPatas - Cadastro de Lar" <${process.env.EMAIL_USER}>`,
+      to: process.env.EMAIL_DEST,
       subject: "Novo cadastro de Lar Temporário aguardando aprovação",
       html: `
         <h2>Novo cadastro de lar temporário</h2>
@@ -72,6 +72,7 @@ router.post("/", async (req, res) => {
         <p>Esse cadastro aguarda sua aprovação no painel do sistema.</p>
       `,
     });
+    
 
     res.status(201).json({ message: "Cadastro enviado com sucesso." });
   } catch (err) {
