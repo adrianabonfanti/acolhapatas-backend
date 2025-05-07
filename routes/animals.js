@@ -31,12 +31,12 @@ router.post("/", authMiddleware, upload.array("fotos"), async (req, res) => {
 
     const body = {
       ...req.body,
-      castrado: req.body.castrado === "true",
-      vacinado: req.body.vacinado === "true",
-      precisaLarTemporario: req.body.precisaLarTemporario === "true",
-      necessidadesEspeciais: req.body.necessidadesEspeciais === "true",
-      usaMedicacao: req.body.usaMedicacao === "true",
-      deficiencia: req.body.deficiencia === "true"
+      castrado: req.body.castrado === "true" || req.body.castrado === true,
+      vacinado: req.body.vacinado === "true" || req.body.vacinado === true,
+      precisaLarTemporario: req.body.precisaLarTemporario === "true" || req.body.precisaLarTemporario === true,
+      necessidadesEspeciais: req.body.necessidadesEspeciais === "true" || req.body.necessidadesEspeciais === true,
+      usaMedicacao: req.body.usaMedicacao === "true" || req.body.usaMedicacao === true,
+      deficiencia: req.body.deficiencia === "true" || req.body.deficiencia === true
     };
 
     const novoAnimal = new Animal({
@@ -57,12 +57,12 @@ router.put("/:id", authMiddleware, upload.array("fotos"), async (req, res) => {
   try {
     const atualizacao = {
       ...req.body,
-      castrado: req.body.castrado === "true",
-      vacinado: req.body.vacinado === "true",
-      precisaLarTemporario: req.body.precisaLarTemporario === "true",
-      necessidadesEspeciais: req.body.necessidadesEspeciais === "true",
-      usaMedicacao: req.body.usaMedicacao === "true",
-      deficiencia: req.body.deficiencia === "true"
+      castrado: req.body.castrado === "true" || req.body.castrado === true,
+      vacinado: req.body.vacinado === "true" || req.body.vacinado === true,
+      precisaLarTemporario: req.body.precisaLarTemporario === "true" || req.body.precisaLarTemporario === true,
+      necessidadesEspeciais: req.body.necessidadesEspeciais === "true" || req.body.necessidadesEspeciais === true,
+      usaMedicacao: req.body.usaMedicacao === "true" || req.body.usaMedicacao === true,
+      deficiencia: req.body.deficiencia === "true" || req.body.deficiencia === true
     };
 
     if (req.files && req.files.length > 0) {
