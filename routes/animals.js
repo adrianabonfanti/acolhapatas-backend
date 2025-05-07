@@ -54,6 +54,8 @@ router.post("/", authMiddleware, upload.single("fotos"), async (req, res) => {
 
 // Atualizar animal (com imagem única via Cloudinary)
 router.put("/:id", authMiddleware, upload.single("fotos"), async (req, res) => {
+  console.log("📦 Body:", req.body);
+  console.log("🖼️ File:", req.file);
   try {
     const atualizacao = {
       ...req.body,
