@@ -42,9 +42,15 @@ app.use("/admin", adminLoginRoutes);
 app.use("/admin", adminRoutes);
 
 // Rotas privadas (precisam de token)
-//app.use("/animals", authMiddleware, animalsRoutes);
+// app.use("/animals", authMiddleware, animalsRoutes);
 app.use("/animals", animalsRoutes); // sem o middleware global aqui
 app.use("/", animalsLarRoutes); // USA CERTO
+
+// Middleware para capturar erros e exibir no console do Render
+app.use((err, req, res, next) => {
+  console.error("ERRO GERAL:", err.stack);
+  res.status(500).json({ message: "Erro interno do servidor", erro: err.message });
+});
 
 // Conexão com banco
 mongoose
