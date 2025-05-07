@@ -55,6 +55,8 @@ router.post("/", authMiddleware, upload.array("fotos"), async (req, res) => {
 // Atualizar animal
 router.put("/:id", authMiddleware, upload.array("fotos"), async (req, res) => {
   try {
+    console.log("req.body:", req.body);
+    console.log("req.files:", req.files);
     const atualizacao = {
       ...req.body,
       castrado: req.body.castrado === "true" || req.body.castrado === true,
@@ -75,8 +77,7 @@ router.put("/:id", authMiddleware, upload.array("fotos"), async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: "Erro ao atualizar animal", error: err.message });
   }
-  console.log(\"req.body:\", req.body);
-console.log(\"req.files:\", req.files);
+
 
 });
 
