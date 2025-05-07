@@ -1,18 +1,7 @@
+// upload.js
 import multer from "multer";
-import path from "path";
-import { fileURLToPath } from "url";
+import { storage } from "./cloudinary.js"; // importa o storage configurado no Cloudinary
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const upload = multer({ storage });
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, path.resolve(__dirname, "..", "uploads"));
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + "-" + file.originalname;
-    cb(null, uniqueSuffix);
-  },
-});
-
-export default multer({ storage });
+export default upload;

@@ -1,26 +1,11 @@
 import express from "express";
-import multer from "multer";
-import path from "path";
-import { fileURLToPath } from "url";
+import upload from "../middlewares/upload.js"; // agora usa o Cloudinary
 import Ong from "../models/Ong.js";
-import bcrypt from "bcryptjs"; // adicionar lá no topo também
+import bcrypt from "bcryptjs";
+
 const router = express.Router();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, path.resolve(__dirname, "..", "uploads"));
-  },
-  filename: (req, file, cb) => {
-    const uniqueName = Date.now() + "-" + file.originalname;
-    cb(null, uniqueName);
-  },
-});
-
-const upload = multer({ storage });
-
+// Cadastrar ONG
 router.post("/", upload.single("logo"), async (req, res) => {
   try {
     const {
@@ -34,41 +19,36 @@ router.post("/", upload.single("logo"), async (req, res) => {
       state,
       responsibleName,
       responsibleEmail,
-      phone, // <-- adicionar
+      phone,
       password,
       website,
       instagram,
       tiktok,
     } = req.body;
 
-    const logo = req.file ? req.file.filename : null;
+    const logo = req.file ? req.file.path : null; // agora vem a URL do Cloudinary
 
-  
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
-// Criptografar a senha antes de salvar
-const salt = await bcrypt.genSalt(10);
-const hashedPassword = await bcrypt.hash(password, salt);
-
-const novaOng = new Ong({
-  name,
-  cnpj,
-  cep,
-  street,
-  number,
-  complement,
-  city,
-  state,
-  responsibleName,
-  responsibleEmail,
-  phone,
-  instagram,
-  tiktok,
-  website,
-  password: hashedPassword,
-  logo,
-});
-
-
+    const novaOng = new Ong({
+      name,
+      cnpj,
+      cep,
+      street,
+      number,
+      complement,
+      city,
+      state,
+      responsibleName,
+      responsibleEmail,
+      phone,
+      instagram,
+      tiktok,
+      website,
+      password: hashedPassword,
+      logo,
+    });
 
     await novaOng.save();
     res.status(201).json({ message: "ONG cadastrada com sucesso. Aguarde aprovação." });
@@ -77,6 +57,7 @@ const novaOng = new Ong({
     res.status(500).json({ error: "Erro ao cadastrar ONG." });
   }
 });
+
 // Buscar ONG pelo ID
 router.get("/:id", async (req, res) => {
   try {
@@ -90,12 +71,14 @@ router.get("/:id", async (req, res) => {
     res.status(500).json({ message: "Erro ao buscar ONG" });
   }
 });
+
+// Atualizar ONG
 router.put("/:id", upload.single("logo"), async (req, res) => {
   try {
     const updatedFields = { ...req.body };
 
     if (req.file) {
-      updatedFields.logo = req.file.filename;
+      updatedFields.logo = req.file.path; // agora usa URL do Cloudinary
     }
 
     const updatedOng = await Ong.findByIdAndUpdate(req.params.id, updatedFields, { new: true });
