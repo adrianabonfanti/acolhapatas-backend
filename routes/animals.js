@@ -28,7 +28,7 @@ router.get("/", authMiddleware, async (req, res) => {
 // Cadastrar novo animal (usando Cloudinary)
 router.post("/", authMiddleware, upload.array("fotos"), async (req, res) => {
   try {
-    const fotos = req.files.map((file) => file.path); // usa a URL do Cloudinary
+    const fotos = req.files?.map((file) => file.path) || [];
     const novoAnimal = new Animal({
       ...req.body,
       fotos,
@@ -41,11 +41,12 @@ router.post("/", authMiddleware, upload.array("fotos"), async (req, res) => {
   }
 });
 
+
 // Atualizar animal (usando Cloudinary)
 router.put("/:id", authMiddleware, upload.array("fotos"), async (req, res) => {
   try {
     const atualizacao = { ...req.body };
-    if (req.files.length > 0) {
+    if (req.files && req.files.length > 0) {
       atualizacao.fotos = req.files.map((file) => file.path); // usa URL do Cloudinary
     }
     const animal = await Animal.findByIdAndUpdate(req.params.id, atualizacao, { new: true });
