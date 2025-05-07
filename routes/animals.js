@@ -1,6 +1,6 @@
 import express from "express";
 import authMiddleware from "../middlewares/authMiddleware.js";
-import upload from "../middlewares/upload.js"; // já vai estar com Cloudinary
+import upload from "../middlewares/upload.js";
 import Animal from "../models/Animal.js";
 
 const router = express.Router();
@@ -9,7 +9,6 @@ const router = express.Router();
 router.get("/", authMiddleware, async (req, res) => {
   try {
     const { nome, especie, sexo, idade, porte } = req.query;
-
     const filtro = { ong: req.user.id };
 
     if (nome) filtro.nome = { $regex: nome, $options: "i" };
@@ -25,15 +24,27 @@ router.get("/", authMiddleware, async (req, res) => {
   }
 });
 
-// Cadastrar novo animal (usando Cloudinary)
+// Cadastrar novo animal (com Cloudinary)
 router.post("/", authMiddleware, upload.array("fotos"), async (req, res) => {
   try {
     const fotos = req.files?.map((file) => file.path) || [];
-    const novoAnimal = new Animal({
+
+    const body = {
       ...req.body,
+      castrado: req.body.castrado === "true",
+      vacinado: req.body.vacinado === "true",
+      precisaLarTemporario: req.body.precisaLarTemporario === "true",
+      necessidadesEspeciais: req.body.necessidadesEspeciais === "true",
+      usaMedicacao: req.body.usaMedicacao === "true",
+      deficiencia: req.body.deficiencia === "true"
+    };
+
+    const novoAnimal = new Animal({
+      ...body,
       fotos,
       ong: req.user.id,
     });
+
     await novoAnimal.save();
     res.status(201).json(novoAnimal);
   } catch (err) {
@@ -41,14 +52,23 @@ router.post("/", authMiddleware, upload.array("fotos"), async (req, res) => {
   }
 });
 
-
-// Atualizar animal (usando Cloudinary)
+// Atualizar animal
 router.put("/:id", authMiddleware, upload.array("fotos"), async (req, res) => {
   try {
-    const atualizacao = { ...req.body };
+    const atualizacao = {
+      ...req.body,
+      castrado: req.body.castrado === "true",
+      vacinado: req.body.vacinado === "true",
+      precisaLarTemporario: req.body.precisaLarTemporario === "true",
+      necessidadesEspeciais: req.body.necessidadesEspeciais === "true",
+      usaMedicacao: req.body.usaMedicacao === "true",
+      deficiencia: req.body.deficiencia === "true"
+    };
+
     if (req.files && req.files.length > 0) {
-      atualizacao.fotos = req.files.map((file) => file.path); // usa URL do Cloudinary
+      atualizacao.fotos = req.files.map((file) => file.path);
     }
+
     const animal = await Animal.findByIdAndUpdate(req.params.id, atualizacao, { new: true });
     if (!animal) return res.status(404).json({ message: "Animal não encontrado" });
     res.json(animal);
