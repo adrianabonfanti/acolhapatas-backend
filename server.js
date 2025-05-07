@@ -20,7 +20,11 @@ import contatoRoutes from "./routes/contato.js";
 dotenv.config();
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: "https://www.acolhapatas.com.br",
+  credentials: true
+}));
+
 app.use("/uploads", express.static("uploads"));
 app.use(express.json());
 
@@ -38,7 +42,8 @@ app.use("/admin", adminLoginRoutes);
 app.use("/admin", adminRoutes);
 
 // Rotas privadas (precisam de token)
-app.use("/animals", authMiddleware, animalsRoutes);
+//app.use("/animals", authMiddleware, animalsRoutes);
+app.use("/animals", animalsRoutes); // sem o middleware global aqui
 app.use("/", animalsLarRoutes); // USA CERTO
 
 // Conexão com banco
