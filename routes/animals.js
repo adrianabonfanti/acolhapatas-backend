@@ -75,6 +75,9 @@ router.put("/:id", authMiddleware, upload.array("fotos"), async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: "Erro ao atualizar animal", error: err.message });
   }
+  console.log(\"req.body:\", req.body);
+console.log(\"req.files:\", req.files);
+
 });
 
 // Excluir animal
