@@ -25,9 +25,14 @@ router.get("/", authMiddleware, async (req, res) => {
 });
 
 // Cadastrar novo animal (com imagem única via Cloudinary)
-router.post("/", authMiddleware, upload.single("fotos"), async (req, res) => {
+router.post("/", authMiddleware, upload.single("fotos"), async (req, res, next) => {
   try {
-    const fotos = req.file ? [req.file.path] : [];
+    if (!req.file) {
+      const err = new Error("Imagem não enviada");
+      return next(err);
+    }
+
+    const fotos = [req.file.path];
 
     const body = {
       ...req.body,
@@ -48,12 +53,12 @@ router.post("/", authMiddleware, upload.single("fotos"), async (req, res) => {
     await novoAnimal.save();
     res.status(201).json(novoAnimal);
   } catch (err) {
-    res.status(500).json({ message: "Erro ao cadastrar animal", error: err.message });
+    next(err);
   }
 });
 
 // Atualizar animal (com imagem única via Cloudinary)
-router.put("/:id", authMiddleware, upload.single("fotos"), async (req, res) => {
+router.put("/:id", authMiddleware, upload.single("fotos"), async (req, res, next) => {
   console.log("📦 Body:", req.body);
   console.log("🖼️ File:", req.file);
   try {
@@ -67,6 +72,11 @@ router.put("/:id", authMiddleware, upload.single("fotos"), async (req, res) => {
       deficiencia: req.body.deficiencia === "true" || req.body.deficiencia === true
     };
 
+    if (!req.file) {
+      const err = new Error("Imagem não enviada");
+      return next(err);
+    }
+
     if (req.file) {
       atualizacao.fotos = [req.file.path];
     }
@@ -75,7 +85,7 @@ router.put("/:id", authMiddleware, upload.single("fotos"), async (req, res) => {
     if (!animal) return res.status(404).json({ message: "Animal não encontrado" });
     res.json(animal);
   } catch (err) {
-    res.status(500).json({ message: "Erro ao atualizar animal", error: err.message });
+    next(err);
   }
 });
 
