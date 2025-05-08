@@ -48,9 +48,10 @@ app.use("/", animalsLarRoutes); // USA CERTO
 
 // Middleware para capturar erros e exibir no console do Render
 app.use((err, req, res, next) => {
-  console.error("ERRO GERAL:", err.stack);
-  res.status(500).json({ message: "Erro interno do servidor", erro: err.message });
+  console.error("ERRO GERAL:", err?.stack || err);
+  res.status(500).json({ message: "Erro interno do servidor", erro: err?.message || String(err) });
 });
+
 
 // Conexão com banco
 mongoose
