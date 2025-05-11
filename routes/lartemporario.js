@@ -3,7 +3,7 @@ import authMiddleware from "../middlewares/authMiddleware.js";
 import LarTemporario from "../models/LarTemporario.js";
 import bcrypt from "bcryptjs";
 import nodemailer from "nodemailer";
-
+import upload from "../middlewares/upload.js"; // agora usa o Cloudinary
 const router = express.Router();
 
 // Buscar lares temporários disponíveis
