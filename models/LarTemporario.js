@@ -11,7 +11,10 @@ const larTemporarioSchema = new mongoose.Schema({
   telefone: String,
   email: String,
   password: String,
-  fotoUrl: String,
+  foto: {
+    type: Buffer, // ou String se for URL
+  },
+  
 
   especie: [String],
   porte: [String],

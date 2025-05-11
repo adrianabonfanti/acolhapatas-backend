@@ -36,8 +36,10 @@ router.get("/", async (req, res) => {
 });
 
 // Cadastro de lar temporário
-router.post("/", async (req, res) => {
+router.post("/", upload.single("foto"), async (req, res) => {
+
   try {
+    const fotoBuffer = req.file?.buffer;
     const { password, ...resto } = req.body;
 
     const salt = await bcrypt.genSalt(10);
@@ -47,6 +49,7 @@ router.post("/", async (req, res) => {
       ...resto,
       sexo: req.body.sexo || "",
       password: hashedPassword,
+      foto: fotoBuffer, // Adicionando a imagem
     });
 
     await novoLar.save();
