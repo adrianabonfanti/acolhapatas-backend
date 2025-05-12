@@ -11,18 +11,11 @@ const larTemporarioSchema = new mongoose.Schema({
   telefone: String,
   email: String,
   password: String,
-  foto: { type: String },
-  
-  
+  fotoUrl: String,
 
   especie: [String],
   porte: [String],
   idade: [String],
-  sexo: {
-    type: String,
-    enum: ["macho", "femea", "tanto-faz"],
-    required: true
-  },
   medicacao: Boolean,
   tratamento: Boolean,
   necessidadesEspeciais: Boolean,
