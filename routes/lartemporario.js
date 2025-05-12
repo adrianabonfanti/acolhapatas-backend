@@ -39,7 +39,7 @@ router.get("/", async (req, res) => {
 router.post("/", upload.single("foto"), async (req, res) => {
 
   try {
-    const fotoUrl = req.file?.path;
+    const fotoUrl = req.file ? req.file.path : null;;
     const { password, ...resto } = req.body;
 
     const salt = await bcrypt.genSalt(10);
@@ -86,6 +86,9 @@ router.put("/editar", authMiddleware, async (req, res) => {
   try {
     const userId = req.user.id;
     const { nome, ...dadosAtualizados } = req.body;
+    if (req.file) {
+      updatedFields.foto = req.file.path; // agora usa URL do Cloudinary
+    }
 
     if (dadosAtualizados.quantidade < 0) {
       return res.status(400).json({ message: "Quantidade de vagas não pode ser negativa." });
