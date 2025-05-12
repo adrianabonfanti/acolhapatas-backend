@@ -39,7 +39,7 @@ router.get("/", async (req, res) => {
 router.post("/", upload.single("foto"), async (req, res) => {
 
   try {
-    const fotoBuffer = req.file?.buffer;
+    const fotoUrl = req.file?.path;
     const { password, ...resto } = req.body;
 
     const salt = await bcrypt.genSalt(10);
@@ -49,7 +49,7 @@ router.post("/", upload.single("foto"), async (req, res) => {
       ...resto,
       sexo: req.body.sexo || "",
       password: hashedPassword,
-      foto: fotoBuffer, // Adicionando a imagem
+      foto: fotoUrl,
     });
 
     await novoLar.save();

@@ -12,8 +12,9 @@ const larTemporarioSchema = new mongoose.Schema({
   email: String,
   password: String,
   foto: {
-    type: Buffer, // ou String se for URL
+    type: String, // URL do Cloudinary
   },
+  
   
 
   especie: [String],
