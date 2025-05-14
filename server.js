@@ -52,6 +52,9 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: "Erro interno do servidor", erro: err?.message || String(err) });
 });
 
+app.get("/ping", (req, res) => {
+  res.status(200).send("pong");
+});
 
 // Conexão com banco
 mongoose
