@@ -16,7 +16,7 @@ import animalsLarRoutes from "./routes/animalsLar.js";
 import adminLoginRoutes from "./routes/adminLogin.js";
 import adminRoutes from "./routes/admin.js";
 import contatoRoutes from "./routes/contato.js"; 
-
+import eventosRoutes from "./routes/eventos"; 
 dotenv.config();
 
 const app = express();
@@ -45,7 +45,7 @@ app.use("/admin", adminRoutes);
 // app.use("/animals", authMiddleware, animalsRoutes);
 app.use("/animals", animalsRoutes); // sem o middleware global aqui
 app.use("/", animalsLarRoutes); // USA CERTO
-
+app.use('/eventos', eventosRoutes);
 // Middleware para capturar erros e exibir no console do Render
 app.use((err, req, res, next) => {
   console.error("ERRO GERAL:", err?.stack || err);
