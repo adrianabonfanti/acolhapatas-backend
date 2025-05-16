@@ -30,7 +30,11 @@ router.use(authMiddleware);
 router.post('/', upload.single('imagem'), async (req, res) => {
   try {
     const imagem = req.file ? req.file.path : null;
-
+  // Converte a data para formato ISO se estiver em formato brasileiro
+    if (req.body.data && req.body.data.includes("/")) {
+      const [dia, mes, ano] = req.body.data.split("/");
+      req.body.data = `${ano}-${mes}-${dia}`;
+    }
     const novoEvento = new Evento({
       ...req.body,
       ong: req.user.id,
