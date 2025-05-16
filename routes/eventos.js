@@ -11,7 +11,11 @@ const router = express.Router();
 router.get("/public", async (req, res) => {
   try {
     const hoje = new Date().toISOString().slice(0, 10);
-    const eventos = await Evento.find({ data: { $gte: hoje } }).sort({ data: 1 }).populate("ong");
+    const eventos = await Evento.find({ 
+  data: { $gte: hoje },
+  ong: { $ne: null } // ✅ apenas eventos com ONG associada
+}).sort({ data: 1 }).populate("ong");
+
     res.json(eventos);
   } catch (err) {
     console.error("💥 ERRO AO BUSCAR EVENTOS PÚBLICOS:", err);
