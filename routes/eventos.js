@@ -29,7 +29,7 @@ router.post('/', upload.single('imagem'), async (req, res) => {
     const salvo = await novoEvento.save();
     res.status(201).json(salvo);
   } catch (err) {
-    console.error("Erro ao salvar evento:", err);
+    console.error("💥 ERRO AO SALVAR EVENTO:", err);
     res.status(500).json({ erro: 'Erro ao salvar evento.', detalhes: err.message });
   }
 });
@@ -45,8 +45,8 @@ router.get('/', async (req, res) => {
     const eventos = await Evento.find(filtros).sort({ data: -1 });
     res.json(eventos);
   } catch (err) {
-    console.error("Erro ao buscar eventos:", err);
-    res.status(500).json({ erro: 'Erro ao buscar eventos.' });
+    console.error("💥 ERRO AO BUSCAR EVENTOS:", err);
+    res.status(500).json({ erro: 'Erro ao buscar eventos.', detalhes: err.message });
   }
 });
 
@@ -64,8 +64,8 @@ router.put('/:id', upload.single('imagem'), async (req, res) => {
     );
     res.json(evento);
   } catch (err) {
-    console.error("Erro ao editar evento:", err);
-    res.status(500).json({ erro: 'Erro ao editar evento.' });
+    console.error("💥 ERRO AO EDITAR EVENTO:", err);
+    res.status(500).json({ erro: 'Erro ao editar evento.', detalhes: err.message });
   }
 });
 
@@ -75,8 +75,8 @@ router.delete('/:id', async (req, res) => {
     await Evento.deleteOne({ _id: req.params.id, ong: req.user.id });
     res.json({ msg: 'Evento apagado com sucesso.' });
   } catch (err) {
-    console.error("Erro ao apagar evento:", err);
-    res.status(500).json({ erro: 'Erro ao apagar evento.' });
+    console.error("💥 ERRO AO APAGAR EVENTO:", err);
+    res.status(500).json({ erro: 'Erro ao apagar evento.', detalhes: err.message });
   }
 });
 
@@ -97,8 +97,8 @@ router.post('/:id/clonar', async (req, res) => {
     const salvo = await copia.save();
     res.json(salvo);
   } catch (err) {
-    console.error("Erro ao clonar evento:", err);
-    res.status(500).json({ erro: 'Erro ao clonar evento.' });
+    console.error("💥 ERRO AO CLONAR EVENTO:", err);
+    res.status(500).json({ erro: 'Erro ao clonar evento.', detalhes: err.message });
   }
 });
 
