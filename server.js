@@ -16,7 +16,7 @@ import animalsLarRoutes from "./routes/animalsLar.js";
 import adminLoginRoutes from "./routes/adminLogin.js";
 import adminRoutes from "./routes/admin.js";
 import contatoRoutes from "./routes/contato.js"; 
-import eventosRoutes from "./routes/eventos"; 
+import eventosRoutes from "./routes/eventos.js"; 
 dotenv.config();
 
 const app = express();
