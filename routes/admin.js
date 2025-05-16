@@ -108,5 +108,16 @@ router.delete("/animais/:id", async (req, res) => {
     res.status(500).json({ error: "Erro ao apagar Animal." });
   }
 });
+router.get("/admin/pendentes", async (req, res) => {
+  try {
+    const pendentesOngs = await ONG.find({ approved: false });
+    const pendentesLares = await LarTemporario.find({ approved: false });
+    const pendentes = [...pendentesOngs, ...pendentesLares];
+    res.json(pendentes);
+  } catch (error) {
+    res.status(500).json({ error: "Erro ao buscar pendentes." });
+  }
+});
+
 
 export default router;
