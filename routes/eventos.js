@@ -1,8 +1,9 @@
-const express = require('express');
+import express from 'express';
+import multer from 'multer';
+import Evento from '../models/Evento.js';
+import authMiddleware from '../middlewares/authMiddleware.js';
+
 const router = express.Router();
-const multer = require('multer');
-const Evento = require('../models/Evento');
-const authMiddleware = require('../middlewares/authMiddleware');
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -84,7 +85,7 @@ router.post('/:id/clonar', async (req, res) => {
       ...original.toObject(),
       _id: undefined,
       criadoEm: new Date(),
-      data: '', // limpamos a data
+      data: '', // limpa a data
       horaInicio: '',
       horaFim: ''
     });
@@ -95,4 +96,4 @@ router.post('/:id/clonar', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;
