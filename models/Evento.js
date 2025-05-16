@@ -8,6 +8,7 @@ const eventoSchema = new mongoose.Schema({
   },
   nome: { type: String, required: true },
   local: { type: String, required: true },
+  endereco: { type: String },
   data: { type: String, required: true }, // formato: "2025-05-20"
   horaInicio: { type: String, required: true }, // formato: "14:00"
   horaFim: { type: String, required: true }, // formato: "17:00"
