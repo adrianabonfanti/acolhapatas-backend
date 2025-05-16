@@ -2,8 +2,8 @@ import express from "express";
 import ONG from "../models/Ong.js";
 import LarTemporario from "../models/LarTemporario.js";
 import Animal from "../models/Animal.js";
+import Evento from "../models/Evento.js";
 import sendEmail from "../utils/sendEmail.js";
-
 
 const router = express.Router();
 
@@ -23,13 +23,12 @@ router.put("/ongs/aprovar/:id", async (req, res) => {
     const ong = await ONG.findByIdAndUpdate(req.params.id, { approved: true }, { new: true });
 
     if (ong?.email) {
-    await sendEmail({
-  name: ong.nome,
-  email: ong.email,
-  phone: ong.telefone || "-",
-  message: `Olá ${ong.nome},\n\nSeu cadastro no AcolhaPatas foi aprovado!\nVocê já pode acessar a área logada com seu e-mail e senha cadastrados.`
-});
-
+      await sendEmail({
+        name: ong.nome,
+        email: ong.email,
+        phone: ong.telefone || "-",
+        message: `Olá ${ong.nome},\n\nSeu cadastro no AcolhaPatas foi aprovado!\nVocê já pode acessar a área logada com seu e-mail e senha cadastrados.`
+      });
     }
 
     res.json({ message: "ONG aprovada com sucesso!" });
@@ -64,13 +63,12 @@ router.put("/lares/aprovar/:id", async (req, res) => {
     const lar = await LarTemporario.findByIdAndUpdate(req.params.id, { approved: true }, { new: true });
 
     if (lar?.email) {
-    await sendEmail({
-  name: lar.nome,
-  email: lar.email,
-  phone: lar.telefone || "-",
-  message: `Olá ${lar.nome},\n\nSeu cadastro no AcolhaPatas foi aprovado!\nVocê já pode acessar a área logada com seu e-mail e senha cadastrados.`
-});
-
+      await sendEmail({
+        name: lar.nome,
+        email: lar.email,
+        phone: lar.telefone || "-",
+        message: `Olá ${lar.nome},\n\nSeu cadastro no AcolhaPatas foi aprovado!\nVocê já pode acessar a área logada com seu e-mail e senha cadastrados.`
+      });
     }
 
     res.json({ message: "Lar Temporário aprovado com sucesso!" });
@@ -108,16 +106,25 @@ router.delete("/animais/:id", async (req, res) => {
     res.status(500).json({ error: "Erro ao apagar Animal." });
   }
 });
-router.get("/admin/pendentes", async (req, res) => {
+
+// 📅 Buscar todos os Eventos
+router.get("/eventos", async (req, res) => {
   try {
-    const pendentesOngs = await ONG.find({ approved: false });
-    const pendentesLares = await LarTemporario.find({ approved: false });
-    const pendentes = [...pendentesOngs, ...pendentesLares];
-    res.json(pendentes);
+    const eventos = await Evento.find().populate("ong");
+    res.json(eventos);
   } catch (error) {
-    res.status(500).json({ error: "Erro ao buscar pendentes." });
+    res.status(500).json({ error: "Erro ao buscar Eventos." });
   }
 });
 
+// 🗑️ Apagar Evento
+router.delete("/eventos/:id", async (req, res) => {
+  try {
+    await Evento.findByIdAndDelete(req.params.id);
+    res.json({ message: "Evento apagado com sucesso!" });
+  } catch (error) {
+    res.status(500).json({ error: "Erro ao apagar Evento." });
+  }
+});
 
 export default router;
