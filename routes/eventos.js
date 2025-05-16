@@ -34,7 +34,7 @@ router.post('/', upload.single('imagem'), async (req, res) => {
     if (req.body.data && req.body.data.includes("/")) {
       const [dia, mes, ano] = req.body.data.split("/");
       req.body.data = `${ano}-${mes}-${dia}`;
-    }
+    } 
     const novoEvento = new Evento({
       ...req.body,
       ong: req.user.id,
