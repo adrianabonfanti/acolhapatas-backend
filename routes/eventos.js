@@ -52,7 +52,10 @@ for (const i of interessados) {
   const correspondeEstado = !i.estado || i.estado.toUpperCase() === novoEvento.estado.toUpperCase();
 
   if (correspondeONG && correspondeCidade && correspondeEstado) {
-    const dataFormatada = new Date(novoEvento.data).toLocaleDateString("pt-BR");
+    const dataFormatada = {(() => {
+  const [ano, mes, dia] = evento.data.split("-");
+  return `${dia}/${mes}/${ano}`;
+})()};
     const conteudo = `
       <p>Olá ${i.nome},</p>
       <p>Um novo evento do AcolhaPatas pode te interessar:</p>
@@ -93,8 +96,15 @@ router.get('/', async (req, res) => {
     if (req.query.data) filtros.data = req.query.data;
     if (req.query.precisaVoluntario) filtros.precisaVoluntario = req.query.precisaVoluntario === 'true';
 
-    const eventos = await Evento.find(filtros).sort({ data: -1 });
-    res.json(eventos);
+    const eventos = await Evento.find(filtros).sort({ data: 1 });
+
+const eventosComContagem = await Promise.all(eventos.map(async (evento) => {
+  const count = await Voluntario.countDocuments({ evento: evento._id });
+  return { ...evento.toObject(), voluntariosCount: count };
+}));
+
+res.json(eventosComContagem);
+
   } catch (err) {
     console.error("💥 ERRO AO BUSCAR EVENTOS:", err);
     res.status(500).json({ erro: 'Erro ao buscar eventos.', detalhes: err.message });
