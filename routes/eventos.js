@@ -52,10 +52,7 @@ for (const i of interessados) {
   const correspondeEstado = !i.estado || i.estado.toUpperCase() === novoEvento.estado.toUpperCase();
 
   if (correspondeONG && correspondeCidade && correspondeEstado) {
-    const dataFormatada = {(() => {
-  const [ano, mes, dia] = evento.data.split("-");
-  return `${dia}/${mes}/${ano}`;
-})()};
+  
     const conteudo = `
       <p>Olá ${i.nome},</p>
       <p>Um novo evento do AcolhaPatas pode te interessar:</p>
