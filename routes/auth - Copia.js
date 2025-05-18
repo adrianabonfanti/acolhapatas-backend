@@ -81,7 +81,17 @@ router.post("/login-lar", async (req, res) => {
           return res.status(401).json({ message: "Senha incorreta" });
       }
 
-      res.status(200).json({ message: "Login de Lar Temporário realizado com sucesso" });
+      const token = jwt.sign(
+        { id: lar._id, tipo: "lar" },
+        process.env.JWT_SECRET
+      );
+      
+      // Remove a senha do objeto antes de enviar
+      const { password: senhaHash, ...larSemSenha } = lar._doc;
+
+      
+      res.status(200).json({ token, lar: larSemSenha });
+      
   } catch (err) {
       console.error(err);
       res.status(500).json({ message: "Erro ao logar Lar Temporário", error: err.message });

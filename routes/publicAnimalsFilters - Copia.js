@@ -24,12 +24,37 @@ router.get("/", async (req, res) => {
       query.porte = { $in: Array.isArray(req.query.porte) ? req.query.porte : [req.query.porte] };
     }
 
-    const animais = await Animal.find(query);
-    res.json(animais);
+    const todosAnimais = await Animal.find(query).populate("ong");
+
+    // Util para remover acentos e padronizar
+    const normalizar = (texto) =>
+      texto?.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
+    const ongFiltro = normalizar(req.query.ong || "");
+    const cidadeFiltro = normalizar(req.query.cidade || "");
+    const estadoFiltro = normalizar(req.query.estado || "");
+
+    const animaisFiltrados = todosAnimais.filter((animal) => {
+      const ong = animal.ong;
+
+      const nomeOk =
+      !ongFiltro ||
+      (ong?.name && normalizar(ong.name).includes(ongFiltro)) ||
+      (animal?.ong?.name && normalizar(animal.ong.name).includes(ongFiltro));
+    
+const cidadeOk = !cidadeFiltro || normalizar(ong?.city || "").includes(cidadeFiltro);
+const estadoOk = !estadoFiltro || normalizar(ong?.state || "").includes(estadoFiltro);
+
+
+      return nomeOk && cidadeOk && estadoOk;
+    });
+
+    res.json(animaisFiltrados);
   } catch (error) {
     console.error("Erro ao buscar animais públicos:", error);
     res.status(500).json({ message: "Erro ao buscar animais." });
   }
 });
+
 
 export default router;

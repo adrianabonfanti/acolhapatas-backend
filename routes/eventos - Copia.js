@@ -6,13 +6,35 @@ import upload from '../middlewares/upload.js';
 
 const router = express.Router();
 
+
+// ROTA PÚBLICA: Buscar eventos futuros para vitrine
+router.get("/public", async (req, res) => {
+  try {
+    const hoje = new Date().toISOString().slice(0, 10);
+    const eventos = await Evento.find({ 
+  data: { $gte: hoje },
+  ong: { $ne: null } // ✅ apenas eventos com ONG associada
+}).sort({ data: 1 }).populate("ong");
+
+    res.json(eventos);
+  } catch (err) {
+    console.error("💥 ERRO AO BUSCAR EVENTOS PÚBLICOS:", err);
+    res.status(500).json({ erro: "Erro ao buscar eventos públicos." });
+  }
+});
+
+
 router.use(authMiddleware);
 
 // POST: Criar novo evento
 router.post('/', upload.single('imagem'), async (req, res) => {
   try {
     const imagem = req.file ? req.file.path : null;
-
+  // Converte a data para formato ISO se estiver em formato brasileiro
+    if (req.body.data && req.body.data.includes("/")) {
+      const [dia, mes, ano] = req.body.data.split("/");
+      req.body.data = `${ano}-${mes}-${dia}`;
+    } 
     const novoEvento = new Evento({
       ...req.body,
       ong: req.user.id,

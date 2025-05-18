@@ -1,39 +1,46 @@
-import express from "express";
-import nodemailer from "nodemailer";
-import dotenv from "dotenv";
-
-dotenv.config();
-
+const express = require("express");
+const nodemailer = require("nodemailer");
 const router = express.Router();
+require("dotenv").config();
 
-router.post("/contato", async (req, res) => {
-  const { email, mensagem } = req.body;
+router.post("/", async (req, res) => {
+  const { name, phone, email, message, mensagem } = req.body;
 
-  if (!email || !mensagem) {
-    return res.status(400).json({ message: "Email e mensagem são obrigatórios" });
+  // Suporte para formato antigo (mensagem) e novo (message)
+  const nomeFinal = name || "Visitante";
+  const mensagemFinal = message || mensagem;
+
+  if (!email || !mensagemFinal) {
+    return res.status(400).json({ message: "E-mail e mensagem são obrigatórios" });
   }
 
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+  });
+
   try {
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
-
     await transporter.sendMail({
-      from: `"Contato ONG" <${process.env.EMAIL_USER}>`,
+      from: `"${nomeFinal}" <${email}>`,
       to: process.env.EMAIL_DEST,
-      subject: `Mensagem da ONG: ${email}`,
-      text: mensagem,
+      subject: "Nova mensagem pelo site AcolhaPatas",
+      html: `
+        <h2>Mensagem recebida pelo site</h2>
+        <p><strong>Nome:</strong> ${nomeFinal}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        ${phone ? `<p><strong>Telefone:</strong> ${phone}</p>` : ""}
+        <p><strong>Mensagem:</strong><br>${mensagemFinal}</p>
+      `,
     });
 
-    res.json({ message: "Mensagem enviada com sucesso" });
-  } catch (err) {
-    console.error("Erro ao enviar e-mail:", err);
-    res.status(500).json({ message: "Erro ao enviar e-mail", error: err.message });
+    res.status(200).json({ success: true, message: "Mensagem enviada com sucesso!" });
+  } catch (error) {
+    console.error("Erro ao enviar e-mail:", error);
+    res.status(500).json({ success: false, message: "Erro ao enviar a mensagem." });
   }
 });
 
-export default router;
+module.exports = router;

@@ -14,8 +14,9 @@ const larTemporarioSchema = new mongoose.Schema({
   fotoUrl: String,
 
   especie: [String],
-  porte: [String],
+   porte: [String],
   idade: [String],
+  sexo: String,
   medicacao: Boolean,
   tratamento: Boolean,
   necessidadesEspeciais: Boolean,

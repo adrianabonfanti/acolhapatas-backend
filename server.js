@@ -17,6 +17,8 @@ import adminLoginRoutes from "./routes/adminLogin.js";
 import adminRoutes from "./routes/admin.js";
 import contatoRoutes from "./routes/contato.js"; 
 import eventosRoutes from "./routes/eventos.js"; 
+import interesseEventosRoutes from "./routes/interesseEventos.js";
+import voluntariosRoutes from "./routes/voluntarios.js";
 dotenv.config();
 
 const app = express();
@@ -33,11 +35,12 @@ app.use("/contato", contatoRoutes);
 app.use("/ongs", ongRoutes); 
 app.use("/public/ongs", publicOngRoutes);
 app.use("/public/animals", publicAnimalsFilters);
+app.use("/", interesseEventosRoutes);
 
 app.use("/", publicAnimalsRoutes);
 app.use("/lartemporario", larTemporarioRoutes);
 app.use("/", authRoutes);
-
+app.use("/voluntarios", voluntariosRoutes);
 app.use("/admin", adminLoginRoutes);
 app.use("/admin", adminRoutes);
 

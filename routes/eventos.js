@@ -3,6 +3,8 @@ import express from 'express';
 import Evento from '../models/Evento.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
 import upload from '../middlewares/upload.js';
+import InteresseEvento from "../models/InteresseEvento.js";
+import sendEmail from "../utils/sendEmail.js"; 
 
 const router = express.Router();
 
@@ -48,7 +50,40 @@ router.post('/', upload.single('imagem'), async (req, res) => {
     res.status(500).json({ erro: 'Erro ao salvar evento.', detalhes: err.message });
   }
 });
+const interessados = await InteresseEvento.find();
 
+for (const i of interessados) {
+  const correspondeONG = i.ongs.length === 0 || i.ongs.includes(novoEvento.ong.toString());
+  const correspondeCidade = !i.cidade || i.cidade.toLowerCase() === novoEvento.cidade.toLowerCase();
+  const correspondeEstado = !i.estado || i.estado.toUpperCase() === novoEvento.estado.toUpperCase();
+
+  if (correspondeONG && correspondeCidade && correspondeEstado) {
+    const dataFormatada = new Date(novoEvento.data).toLocaleDateString("pt-BR");
+    const conteudo = `
+      <p>Olá ${i.nome},</p>
+      <p>Um novo evento do AcolhaPatas pode te interessar:</p>
+      <ul>
+        <li><strong>${novoEvento.nome}</strong></li>
+        <li><strong>Data:</strong> ${dataFormatada}</li>
+        <li><strong>Horário:</strong> ${novoEvento.horaInicio} às ${novoEvento.horaFim}</li>
+        <li><strong>Local:</strong> ${novoEvento.endereco}, ${novoEvento.cidade} - ${novoEvento.estado}</li>
+        ${novoEvento.descricao ? `<li><strong>Descrição:</strong> ${novoEvento.descricao}</li>` : ""}
+      </ul>
+      ${
+        novoEvento.precisaVoluntario
+          ? `<p><strong>Este evento está precisando de voluntários!</strong><br>Acesse <a href="https://acolhapatas.com.br/eventos">acolhapatas.com.br/eventos</a> para confirmar sua participação.</p>`
+          : ""
+      }
+      <p><a href="https://acolhapatas.com.br/eventos">Clique aqui para ver todos os eventos</a></p>
+    `;
+
+    await sendEmail({
+      name: i.nome,
+      email: i.email,
+      html: conteudo
+    });
+  }
+}
 // GET: Buscar eventos da ONG
 router.get('/', async (req, res) => {
   try {
