@@ -42,12 +42,17 @@ router.post('/', upload.single('imagem'), async (req, res) => {
     });
 
     const salvo = await novoEvento.save();
+    salvo.cidade = salvo.cidade?.trim() || "";
+salvo.estado = salvo.estado?.trim().toUpperCase() || "";
+
     const interessados = await InteresseEvento.find();
 
     for (const i of interessados) {
-      const correspondeONG = i.ongs.length === 0 || i.ongs.includes(salvo.ong.toString());
-      const correspondeCidade = !i.cidade || i.cidade.toLowerCase() === salvo.cidade.toLowerCase();
-      const correspondeEstado = !i.estado || i.estado.toUpperCase() === salvo.estado.toUpperCase();
+      const correspondeONG =
+  i.ongs.length === 0 || i.ongs.map(String).includes(salvo.ong.toString());
+      const correspondeCidade = i.cidade === "" || i.cidade.toLowerCase() === salvo.cidade.toLowerCase();
+const correspondeEstado = i.estado === "" || i.estado.toUpperCase() === salvo.estado.toUpperCase();
+
 
       if (correspondeONG && correspondeCidade && correspondeEstado) {
         const [ano, mes, dia] = salvo.data.split("-");
