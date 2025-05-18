@@ -44,11 +44,11 @@ router.post('/', upload.single('imagem'), async (req, res) => {
     const salvo = await novoEvento.save();
     salvo.cidade = salvo.cidade?.trim() || "";
 salvo.estado = salvo.estado?.trim().toUpperCase() || "";
-
+ await salvo.populate("ong");
     const interessados = await InteresseEvento.find();
 
     for (const i of interessados) {
-      await salvo.populate("ong");
+     
           const correspondeCidade = i.cidade === "" || i.cidade.toLowerCase() === salvo.cidade.toLowerCase();
           const correspondeEstado = i.estado === "" || i.estado.toUpperCase() === salvo.estado.toUpperCase();
 
