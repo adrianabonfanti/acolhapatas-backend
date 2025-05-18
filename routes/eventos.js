@@ -44,13 +44,7 @@ router.post('/', upload.single('imagem'), async (req, res) => {
     });
 
     const salvo = await novoEvento.save();
-    res.status(201).json(salvo);
-  } catch (err) {
-    console.error("💥 ERRO AO SALVAR EVENTO:", err);
-    res.status(500).json({ erro: 'Erro ao salvar evento.', detalhes: err.message });
-  }
-});
-const interessados = await InteresseEvento.find();
+    const interessados = await InteresseEvento.find();
 
 for (const i of interessados) {
   const correspondeONG = i.ongs.length === 0 || i.ongs.includes(novoEvento.ong.toString());
@@ -84,6 +78,13 @@ for (const i of interessados) {
     });
   }
 }
+    res.status(201).json(salvo);
+  } catch (err) {
+    console.error("💥 ERRO AO SALVAR EVENTO:", err);
+    res.status(500).json({ erro: 'Erro ao salvar evento.', detalhes: err.message });
+  }
+});
+
 // GET: Buscar eventos da ONG
 router.get('/', async (req, res) => {
   try {
