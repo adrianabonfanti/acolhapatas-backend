@@ -8,12 +8,13 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-export default async function sendEmail({ name, email, phone, message, html }) {
+export default async function sendEmail({ name, email, phone, message, html, subject }) {
   await transporter.sendMail({
     from: `"AcolhaPatas" <${process.env.EMAIL_USER}>`,
     to: email,
-    subject: "Cadastro aprovado no AcolhaPatas!",
+    subject: subject || "AcolhaPatas - Notificação",
     text: message || undefined,
     html: html || undefined
   });
 }
+

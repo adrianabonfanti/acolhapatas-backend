@@ -74,6 +74,7 @@ router.post('/', upload.single('imagem'), async (req, res) => {
         await sendEmail({
           name: i.nome,
           email: i.email,
+           subject: `Novo evento do AcolhaPatas: ${salvo.nome}`,
           html: conteudo
         });
       }
