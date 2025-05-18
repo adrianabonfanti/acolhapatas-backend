@@ -5,6 +5,7 @@ import authMiddleware from '../middlewares/authMiddleware.js';
 import upload from '../middlewares/upload.js';
 import InteresseEvento from "../models/InteresseEvento.js";
 import sendEmail from "../utils/sendEmail.js"; 
+import Voluntario from "../models/VoluntarioEvento.js";
 
 const router = express.Router();
 
