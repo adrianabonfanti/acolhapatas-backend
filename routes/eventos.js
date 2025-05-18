@@ -48,20 +48,20 @@ salvo.estado = salvo.estado?.trim().toUpperCase() || "";
     const interessados = await InteresseEvento.find();
 
     for (const i of interessados) {
-      const correspondeONG =
-  i.ongs.length === 0 || i.ongs.map(String).includes(salvo.ong.toString());
-      const correspondeCidade = i.cidade === "" || i.cidade.toLowerCase() === salvo.cidade.toLowerCase();
-const correspondeEstado = i.estado === "" || i.estado.toUpperCase() === salvo.estado.toUpperCase();
+      await salvo.populate("ong");
+          const correspondeCidade = i.cidade === "" || i.cidade.toLowerCase() === salvo.cidade.toLowerCase();
+          const correspondeEstado = i.estado === "" || i.estado.toUpperCase() === salvo.estado.toUpperCase();
 
 
-      if (correspondeONG && correspondeCidade && correspondeEstado) {
+      if (correspondeCidade && correspondeEstado) {
         const [ano, mes, dia] = salvo.data.split("-");
         const dataFormatada = `${dia}/${mes}/${ano}`;
 
         const conteudo = `
           <p>Olá ${i.nome},</p>
-          <p>Um novo evento do AcolhaPatas pode te interessar:</p>
+          <p>Um novo evento pode te interessar:</p>
           <ul>
+          <p><strong>ONG responsável:</strong> ${salvo.ong?.nome || "ONG não identificada"}</p>
             <li><strong>${salvo.nome}</strong></li>
             <li><strong>Data:</strong> ${dataFormatada}</li>
             <li><strong>Horário:</strong> ${salvo.horaInicio} às ${salvo.horaFim}</li>
