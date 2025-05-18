@@ -61,7 +61,7 @@ salvo.estado = salvo.estado?.trim().toUpperCase() || "";
           <p>Olá ${i.nome},</p>
           <p>Um novo evento pode te interessar:</p>
           <ul>
-          <p><strong>ONG responsável:</strong> ${salvo.ong?.nome || "ONG não identificada"}</p>
+          <p><strong>ONG responsável:</strong> ${salvo.ong?.nome || salvo.ong?.name || "ONG não identificada"}</p>
             <li><strong>${salvo.nome}</strong></li>
             <li><strong>Data:</strong> ${dataFormatada}</li>
             <li><strong>Horário:</strong> ${salvo.horaInicio} às ${salvo.horaFim}</li>
