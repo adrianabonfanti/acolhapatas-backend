@@ -5,13 +5,12 @@ const router = express.Router();
 
 router.post("/interesse-eventos", async (req, res) => {
   try {
-    const { nome, email, ongs, cidade, estado } = req.body;
+    const { nome, email, cidade, estado } = req.body;
 
     const novo = new InteresseEvento({
       nome,
       email,
-      ongs: ongs.length ? ongs : [],
-      cidade: cidade?.trim() || "",
+     cidade: cidade?.trim() || "",
       estado: estado?.trim() || ""
     });
 
