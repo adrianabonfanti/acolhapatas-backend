@@ -91,6 +91,16 @@ salvo.estado = salvo.estado?.trim().toUpperCase() || "";
     res.status(500).json({ erro: 'Erro ao salvar evento.', detalhes: err.message });
   }
 });
+// GET: Buscar todos os eventos (admin)
+router.get("/todos", async (req, res) => {
+  try {
+    const eventos = await Evento.find().sort({ data: -1 }).populate("ong");
+    res.json(eventos);
+  } catch (err) {
+    console.error("💥 ERRO AO BUSCAR TODOS OS EVENTOS:", err);
+    res.status(500).json({ erro: "Erro ao buscar todos os eventos." });
+  }
+});
 
 // GET: Buscar eventos da ONG
 router.get('/', async (req, res) => {
