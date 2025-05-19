@@ -62,3 +62,6 @@ export async function cadastrarAnimal(req, res) {
     res.status(500).json({ error: 'Erro ao cadastrar animal.' });
   }
 }
+export async function atualizarAnimal(req, res) {
+  return res.status(501).json({ error: "Função atualizarAnimal não implementada neste arquivo." });
+}
