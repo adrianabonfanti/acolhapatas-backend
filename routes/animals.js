@@ -3,6 +3,9 @@ import authMiddleware from "../middlewares/authMiddleware.js";
 import upload from "../middlewares/upload.js";
 import Animal from "../models/Animal.js";
 import { atualizarAnimal } from '../controllers/animalController.js';
+import sendEmail from "../utils/sendEmail.js";
+import Ong from "../models/Ong.js";
+
 const router = express.Router();
 
 // Buscar animais com filtros
@@ -50,8 +53,12 @@ router.post("/", authMiddleware, upload.single("fotos"), async (req, res, next) 
       ong: req.user.id,
     });
 
+  
     await novoAnimal.save();
-    res.status(201).json(novoAnimal);
+    
+    await salvo.populate("ong");
+res.status(201).json(salvo);
+
   } catch (err) {
     next(err);
   }
