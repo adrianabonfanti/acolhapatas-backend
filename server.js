@@ -19,6 +19,8 @@ import contatoRoutes from "./routes/contato.js";
 import eventosRoutes from "./routes/eventos.js"; 
 import interesseEventosRoutes from "./routes/interesseEventos.js";
 import voluntariosRoutes from "./routes/voluntarios.js";
+import animaisOngRoutes from "./routes/animalRoutes.js";
+
 dotenv.config();
 
 const app = express();
@@ -43,12 +45,14 @@ app.use("/", authRoutes);
 app.use("/voluntarios", voluntariosRoutes);
 app.use("/admin", adminLoginRoutes);
 app.use("/admin", adminRoutes);
+app.use("/", animaisOngRoutes);
 
 // Rotas privadas (precisam de token)
-// app.use("/animals", authMiddleware, animalsRoutes);
+app.use("/animals", authMiddleware, animalsRoutes);
 app.use("/animals", animalsRoutes); // sem o middleware global aqui
 app.use("/", animalsLarRoutes); // USA CERTO
 app.use('/eventos', eventosRoutes);
+
 // Middleware para capturar erros e exibir no console do Render
 app.use((err, req, res, next) => {
   console.error("ERRO GERAL:", err?.stack || err);
