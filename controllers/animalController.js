@@ -7,10 +7,15 @@ import sendEmail from '../utils/sendEmail.js';
 
 export async function cadastrarAnimal(req, res) {
   try {
+    if (!req.body.nome) {
+      return res.status(400).json({ error: "Campo nome é obrigatório." });
+    }
+
     const fotos = req.file ? [req.file.path] : [];
 
     const body = {
       ...req.body,
+      nome: String(req.body.nome),
       castrado: req.body.castrado === "true" || req.body.castrado === true,
       vacinado: req.body.vacinado === "true" || req.body.vacinado === true,
       precisaLarTemporario: req.body.precisaLarTemporario === "true" || req.body.precisaLarTemporario === true,
@@ -27,7 +32,6 @@ export async function cadastrarAnimal(req, res) {
 
     await novoAnimal.save();
 
-    // Verifica se precisa de lar temporário
     if (novoAnimal.precisaLarTemporario) {
       const todosLares = await LarTemporario.find({ approved: true });
 
@@ -62,6 +66,7 @@ export async function cadastrarAnimal(req, res) {
     res.status(500).json({ error: 'Erro ao cadastrar animal.' });
   }
 }
+
 export async function atualizarAnimal(req, res) {
   return res.status(501).json({ error: "Função atualizarAnimal não implementada neste arquivo." });
 }
