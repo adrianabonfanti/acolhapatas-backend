@@ -1,10 +1,9 @@
-// routes/animalRoutes.js
-
 const express = require('express');
-const { cadastrarAnimal } = require('../controllers/animalController');
+const router = express.Router();
+
 const authMiddleware = require('../middlewares/authMiddleware');
 const upload = require('../middlewares/upload');
-const { cadastrarAnimal } = require('../controllers/animalController'); // <- ISSO É IMPORTANTE
+const { cadastrarAnimal } = require('../controllers/animalController'); // <- ESSENCIA
 
 const router = express.Router();
 
