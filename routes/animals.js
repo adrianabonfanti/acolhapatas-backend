@@ -54,10 +54,10 @@ router.post("/", authMiddleware, upload.single("fotos"), async (req, res, next) 
     });
 
   
-  const salvo = await novoAnimal.save();
-await salvo.populate("ong");
+    await novoAnimal.save();
+    
+    await salvo.populate("ong");
 res.status(201).json(salvo);
-
 
   } catch (err) {
     next(err);
