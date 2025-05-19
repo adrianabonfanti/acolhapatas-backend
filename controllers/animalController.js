@@ -79,9 +79,7 @@ async function cadastrarAnimal(req, res) {
   }
 }
 
-module.exports = {
-  cadastrarAnimal,
-};
+
 
 
 async function atualizarAnimal(req, res) {
@@ -89,6 +87,8 @@ async function atualizarAnimal(req, res) {
 }
 
 module.exports = {
-  atualizarAnimal,
+  cadastrarAnimal,
+  atualizarAnimal
 };
+
 
