@@ -35,20 +35,22 @@ export async function cadastrarAnimal(req, res) {
     if (novoAnimal.precisaLarTemporario) {
       const todosLares = await LarTemporario.find({ approved: true });
 
-      const laresCompatíveis = todosLares.filter((lar) => {
-        return (
-          (!lar.especie || lar.especie.includes(novoAnimal.especie)) &&
-          (!lar.sexo || lar.sexo === novoAnimal.sexo || lar.sexo === 'ambos') &&
-          (!lar.porte || lar.porte.includes(novoAnimal.porte)) &&
-          (!lar.idade || lar.idade.includes(novoAnimal.idade)) &&
-          (!novoAnimal.deficiencia || lar.necessidadesEspeciais) &&
-          (!novoAnimal.usaMedicacao || lar.medicacao)
-        );
-      });
+    const laresCompatíveis = todosLares.filter((lar) => {
+  return (
+    (!lar.especie || lar.especie.map(e => e.toLowerCase()).includes(novoAnimal.especie.toLowerCase())) &&
+    (!lar.sexo || lar.sexo.toLowerCase() === novoAnimal.sexo.toLowerCase() || lar.sexo === 'ambos' || lar.sexo === 'tanto-faz') &&
+    (!lar.porte || lar.porte.map(p => p.toLowerCase()).includes(novoAnimal.porte.toLowerCase())) &&
+    (!lar.idade || lar.idade.map(i => i.toLowerCase()).includes(novoAnimal.idade.toLowerCase())) &&
+    (!novoAnimal.deficiencia || lar.necessidadesEspeciais) &&
+    (!novoAnimal.usaMedicacao || lar.medicacao)
+  );
+});
+
 
       if (laresCompatíveis.length > 0) {
         const ong = await ONG.findById(novoAnimal.ong);
-
+      console.log("ONG:", ong.nome);
+console.log("Lares compatíveis:", laresCompatíveis.map(l => l.email));
         for (const lar of laresCompatíveis) {
           await sendEmail({
             name: lar.nome,
@@ -58,6 +60,8 @@ export async function cadastrarAnimal(req, res) {
           });
         }
       }
+
+
     }
 
     res.status(201).json(novoAnimal);
