@@ -4,7 +4,7 @@ const express = require('express');
 const { cadastrarAnimal } = require('../controllers/animalController');
 const authMiddleware = require('../middlewares/authMiddleware');
 const upload = require('../middlewares/upload');
-
+const { cadastrarAnimal } = require('../controllers/animalController'); // <- ISSO É IMPORTANTE
 
 const router = express.Router();
 
