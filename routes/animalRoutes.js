@@ -7,5 +7,6 @@ const { cadastrarAnimal } = require('../controllers/animalController'); // <- ES
 
 // Rota para cadastro de animal (ONG logada)
 router.post('/ongs/animais', authMiddleware, upload.single("fotos"), cadastrarAnimal);
+console.log("CONTROLLER TESTE:", cadastrarAnimal);
 
 module.exports = router;
