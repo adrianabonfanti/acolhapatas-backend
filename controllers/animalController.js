@@ -7,7 +7,24 @@ import sendEmail from '../utils/sendEmail.js';
 
 export async function cadastrarAnimal(req, res) {
   try {
-    const novoAnimal = new Animal(req.body);
+    const fotos = req.file ? [req.file.path] : [];
+
+    const body = {
+      ...req.body,
+      castrado: req.body.castrado === "true" || req.body.castrado === true,
+      vacinado: req.body.vacinado === "true" || req.body.vacinado === true,
+      precisaLarTemporario: req.body.precisaLarTemporario === "true" || req.body.precisaLarTemporario === true,
+      necessidadesEspeciais: req.body.necessidadesEspeciais === "true" || req.body.necessidadesEspeciais === true,
+      usaMedicacao: req.body.usaMedicacao === "true" || req.body.usaMedicacao === true,
+      deficiencia: req.body.deficiencia === "true" || req.body.deficiencia === true
+    };
+
+    const novoAnimal = new Animal({
+      ...body,
+      fotos,
+      ong: req.user.id,
+    });
+
     await novoAnimal.save();
 
     // Verifica se precisa de lar temporário
@@ -33,7 +50,7 @@ export async function cadastrarAnimal(req, res) {
             name: lar.nome,
             email: lar.email,
             phone: lar.telefone,
-            message: `Olá ${lar.nome},\n\nA ONG ${ong.nome} acabou de cadastrar um animal que se encaixa no perfil que você aceita.\n\nAcesse sua área logada no AcolhaPatas para saber mais: https://acolhapatas.vercel.app/login\n\nObrigado por ser um lar temporário! ❤️`
+            message: `Olá ${lar.nome},\n\nA ONG ${ong.nome} acabou de cadastrar um animal que se encaixa no perfil que você aceita:\n\n• Espécie: ${novoAnimal.especie}\n• Idade: ${novoAnimal.idade}\n• Porte: ${novoAnimal.porte}\n• Sexo: ${novoAnimal.sexo}\n\nAcesse sua área logada no AcolhaPatas para saber mais: https://acolhapatas.vercel.app/login\n\nObrigado por ser um lar temporário! ❤️`
           });
         }
       }

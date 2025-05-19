@@ -2,7 +2,7 @@ import express from "express";
 import authMiddleware from "../middlewares/authMiddleware.js";
 import upload from "../middlewares/upload.js";
 import Animal from "../models/Animal.js";
-
+import { atualizarAnimal } from '../controllers/animalController.js';
 const router = express.Router();
 
 // Buscar animais com filtros
@@ -24,7 +24,7 @@ router.get("/", authMiddleware, async (req, res) => {
   }
 });
 
-// Cadastrar novo animal (com imagem única via Cloudinary)
+// Cadastrar novo animal (com imagem obrigatória)
 router.post("/", authMiddleware, upload.single("fotos"), async (req, res, next) => {
   try {
     if (!req.file) {
@@ -57,11 +57,18 @@ router.post("/", authMiddleware, upload.single("fotos"), async (req, res, next) 
   }
 });
 
-// Atualizar animal (com imagem única via Cloudinary)
+// Atualizar animal (imagem obrigatória, mas mantém a antiga se já existir)
 router.put("/:id", authMiddleware, upload.single("fotos"), async (req, res, next) => {
   console.log("📦 Body:", req.body);
   console.log("🖼️ File:", req.file);
   try {
+    const animalAtual = await Animal.findById(req.params.id);
+
+    if (!req.file && (!animalAtual || !animalAtual.fotos || animalAtual.fotos.length === 0)) {
+      const err = new Error("Imagem obrigatória");
+      return next(err);
+    }
+
     const atualizacao = {
       ...req.body,
       castrado: req.body.castrado === "true" || req.body.castrado === true,
@@ -71,11 +78,6 @@ router.put("/:id", authMiddleware, upload.single("fotos"), async (req, res, next
       usaMedicacao: req.body.usaMedicacao === "true" || req.body.usaMedicacao === true,
       deficiencia: req.body.deficiencia === "true" || req.body.deficiencia === true
     };
-
-    if (!req.file) {
-      const err = new Error("Imagem não enviada");
-      return next(err);
-    }
 
     if (req.file) {
       atualizacao.fotos = [req.file.path];
