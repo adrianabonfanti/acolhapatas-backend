@@ -27,7 +27,7 @@ export async function cadastrarAnimal(req, res) {
     const novoAnimal = new Animal({
       ...body,
       fotos,
-      ong: req.user.id,
+      ong: req.user._id,
     });
 
     await novoAnimal.save();
