@@ -1,5 +1,4 @@
-const mongoose = require("mongoose");
-
+import mongoose from "mongoose";
 
 const VoluntarioEventoSchema = new mongoose.Schema({
   nome: String,
@@ -7,5 +6,4 @@ const VoluntarioEventoSchema = new mongoose.Schema({
   evento: { type: mongoose.Schema.Types.ObjectId, ref: "Evento" }
 }, { timestamps: true });
 
-module.exports = mongoose.model("VoluntarioEvento", VoluntarioEventoSchema);
-
+export default mongoose.model("VoluntarioEvento", VoluntarioEventoSchema);

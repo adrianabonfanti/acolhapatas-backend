@@ -1,5 +1,6 @@
-import express from "express";
-import Animal from "../models/Animal.js";
+const express = require("express");
+const Animal = require("../models/Animal");
+
 
 const router = express.Router();
 
@@ -15,4 +16,5 @@ router.get("/random/:qtd", async (req, res) => {
   }
 });
 
-export default router;
+module.exports = router;
+

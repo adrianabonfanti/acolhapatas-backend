@@ -1,5 +1,6 @@
-import express from "express";
-import Ong from "../models/Ong.js";
+const express = require("express");
+const Ong = require("../models/Ong");
+
 
 const router = express.Router();
 
@@ -14,4 +15,4 @@ router.get("/", async (req, res) => {
   }
 });
 
-export default router;
+module.exports = router;

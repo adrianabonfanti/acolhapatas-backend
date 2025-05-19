@@ -15,6 +15,7 @@ estado: { type: String },
   horaInicio: { type: String, required: true }, // formato: "14:00"
   horaFim: { type: String, required: true }, // formato: "17:00"
   descricao: { type: String },
+  informacoesVoluntario: { type: String },
   imagem: { type: String }, // caminho do arquivo enviado
   precisaVoluntario: { type: Boolean, default: false },
   criadoEm: { type: Date, default: Date.now }

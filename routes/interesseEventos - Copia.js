@@ -1,6 +1,5 @@
-const express = require("express");
-const InteresseEvento = require("../models/InteresseEvento");
-
+import express from "express";
+import InteresseEvento from "../models/InteresseEvento.js";
 
 const router = express.Router();
 
@@ -23,5 +22,4 @@ router.post("/interesse-eventos", async (req, res) => {
   }
 });
 
-module.exports = router;
-
+export default router;

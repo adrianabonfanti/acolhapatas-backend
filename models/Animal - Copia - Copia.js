@@ -1,5 +1,4 @@
-const mongoose = require("mongoose");
-
+import mongoose from "mongoose";
 
 const AnimalSchema = new mongoose.Schema({
   nome: {
@@ -51,4 +50,4 @@ const AnimalSchema = new mongoose.Schema({
 }, { timestamps: true }); // Garante o createdAt e updatedAt
 
 const Animal = mongoose.model("Animal", AnimalSchema);
-module.exports = Animal;
+export default Animal;

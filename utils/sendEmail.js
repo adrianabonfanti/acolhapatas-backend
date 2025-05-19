@@ -1,4 +1,5 @@
-import nodemailer from "nodemailer";
+const nodemailer = require("nodemailer");
+
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -8,7 +9,7 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-export default async function sendEmail({ name, email, phone, message, html, subject }) {
+async function sendEmail({ name, email, phone, message, html, subject }) {
   if (!message && !html) {
     throw new Error("E-mail sem conteúdo: informe 'message' ou 'html'");
   }

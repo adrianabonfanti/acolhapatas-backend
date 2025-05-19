@@ -1,7 +1,7 @@
-// upload.js
-import multer from "multer";
-import { storage } from "../utils/cloudinary.js"; // importa o storage configurado no Cloudinary
+const multer = require("multer");
+const { storage } = require("../utils/cloudinary");
+
 
 const upload = multer({ storage });
 
-export default upload;
+module.exports = upload;

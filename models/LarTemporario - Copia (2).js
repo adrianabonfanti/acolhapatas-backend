@@ -1,5 +1,4 @@
-const mongoose = require("mongoose");
-
+import mongoose from "mongoose";
 
 const larTemporarioSchema = new mongoose.Schema({
   nome: String,
@@ -30,5 +29,4 @@ const larTemporarioSchema = new mongoose.Schema({
   approved: { type: Boolean, default: false },
 });
 
-module.exports = mongoose.model("LarTemporario", larTemporarioSchema);
-
+export default mongoose.model("LarTemporario", larTemporarioSchema);

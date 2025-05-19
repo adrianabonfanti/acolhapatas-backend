@@ -1,7 +1,7 @@
-import express from "express";
-import upload from "../middlewares/upload.js"; // agora usa o Cloudinary
-import Ong from "../models/Ong.js";
-import bcrypt from "bcryptjs";
+const express = require("express");
+const upload = require("../middlewares/upload");
+const Ong = require("../models/Ong");
+const bcrypt = require("bcryptjs");
 
 const router = express.Router();
 
@@ -94,4 +94,5 @@ router.put("/:id", upload.single("logo"), async (req, res) => {
   }
 });
 
-export default router;
+module.exports = router;
+

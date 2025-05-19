@@ -1,4 +1,5 @@
-import express from "express";
+const express = require("express");
+
 const router = express.Router();
 
 router.post("/", async (req, res) => {
@@ -8,4 +9,5 @@ router.post("/", async (req, res) => {
   res.status(200).json({ message: "Pedido de adoção recebido com sucesso!" });
 });
 
-export default router;
+module.exports = router;
+

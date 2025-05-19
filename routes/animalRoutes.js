@@ -1,9 +1,10 @@
 // routes/animalRoutes.js
 
-import express from 'express';
-import { cadastrarAnimal } from '../controllers/animalController.js';
-import authMiddleware from '../middlewares/authMiddleware.js';
-import upload from '../middlewares/upload.js';
+const express = require('express');
+const { cadastrarAnimal } = require('../controllers/animalController');
+const authMiddleware = require('../middlewares/authMiddleware');
+const upload = require('../middlewares/upload');
+
 
 const router = express.Router();
 
@@ -11,4 +12,5 @@ const router = express.Router();
 router.post('/ongs/animais', authMiddleware, upload.single("fotos"), cadastrarAnimal);
 
 
-export default router;
+module.exports = router;
+

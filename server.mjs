@@ -1,27 +1,25 @@
-require("dotenv").config(); // <- primeira linha
-const express = require("express");
-const mongoose = require("mongoose");
-const dotenv = require("dotenv");
-const cors = require("cors");
+import express from "express";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+import cors from "cors";
 
-const ongRoutes = require("./routes/ongs");
-const publicOngRoutes = require("./routes/publicOngs");
-const publicAnimalsFilters = require("./routes/publicAnimalsFilters");
+import ongRoutes from "./routes/ongs.js";
+import publicOngRoutes from "./routes/publicOngs.js";
+import publicAnimalsFilters from "./routes/publicAnimalsFilters.js"; 
 
-const publicAnimalsRoutes = require("./routes/publicAnimals");
-const larTemporarioRoutes = require("./routes/lartemporario");
-const animalsRoutes = require("./routes/animals");
-const authRoutes = require("./routes/auth");
-const authMiddleware = require("./middlewares/authMiddleware");
-const animalsLarRoutes = require("./routes/animalsLar");
-const adminLoginRoutes = require("./routes/adminLogin");
-const adminRoutes = require("./routes/admin");
-const contatoRoutes = require("./routes/contato");
-const eventosRoutes = require("./routes/eventos");
-const interesseEventosRoutes = require("./routes/interesseEventos");
-const voluntariosRoutes = require("./routes/voluntarios");
-const animaisOngRoutes = require("./routes/animalRoutes");
-
+import publicAnimalsRoutes from "./routes/publicAnimals.js"; 
+import larTemporarioRoutes from "./routes/lartemporario.js";
+import animalsRoutes from "./routes/animals.js";
+import authRoutes from "./routes/auth.js"; 
+import authMiddleware from "./middlewares/authMiddleware.js"; 
+import animalsLarRoutes from "./routes/animalsLar.js"; 
+import adminLoginRoutes from "./routes/adminLogin.js";
+import adminRoutes from "./routes/admin.js";
+import contatoRoutes from "./routes/contato.js"; 
+import eventosRoutes from "./routes/eventos.js"; 
+import interesseEventosRoutes from "./routes/interesseEventos.js";
+import voluntariosRoutes from "./routes/voluntarios.js";
+import animaisOngRoutes from "./routes/animalRoutes.js";
 
 dotenv.config();
 

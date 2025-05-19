@@ -1,5 +1,6 @@
-import express from "express";
-import Animal from "../models/Animal.js";
+const express = require("express");
+const Animal = require("../models/Animal");
+
 
 const router = express.Router();
 
@@ -57,4 +58,5 @@ const estadoOk = !estadoFiltro || normalizar(ong?.state || "").includes(estadoFi
 });
 
 
-export default router;
+module.exports = router;
+

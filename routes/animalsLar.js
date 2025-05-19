@@ -1,5 +1,6 @@
-import express from "express";
-import Animal from "../models/Animal.js"; // Ajusta se necessário
+const express = require("express");
+const Animal = require("../models/Animal");
+
 
 const router = express.Router();
 
@@ -87,4 +88,5 @@ if (req.query.porte) {
   }
 });
 
-export default router;
+module.exports = router;
+

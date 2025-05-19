@@ -1,9 +1,10 @@
-import express from "express";
-import ONG from "../models/Ong.js";
-import LarTemporario from "../models/LarTemporario.js";
-import Animal from "../models/Animal.js";
-import Evento from "../models/Evento.js";
-import sendEmail from "../utils/sendEmail.js";
+const express = require("express");
+const ONG = require("../models/Ong");
+const LarTemporario = require("../models/LarTemporario");
+const Animal = require("../models/Animal");
+const Evento = require("../models/Evento");
+const sendEmail = require("../utils/sendEmail");
+
 
 const router = express.Router();
 
@@ -127,4 +128,5 @@ router.delete("/eventos/:id", async (req, res) => {
   }
 });
 
-export default router;
+module.exports = router;
+

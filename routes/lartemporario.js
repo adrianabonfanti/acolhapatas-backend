@@ -1,7 +1,8 @@
-import express from "express";
-import authMiddleware from "../middlewares/authMiddleware.js";
-import LarTemporario from "../models/LarTemporario.js";
-import bcrypt from "bcryptjs"; // adicionar no topo também
+const express = require("express");
+const authMiddleware = require("../middlewares/authMiddleware");
+const LarTemporario = require("../models/LarTemporario");
+const bcrypt = require("bcryptjs");
+
 const router = express.Router();
 // Buscar lares temporários disponíveis
 router.get("/", async (req, res) => {
@@ -83,4 +84,5 @@ router.put("/editar", authMiddleware, async (req, res) => {
 });
 
 
-export default router;
+module.exports = router;
+

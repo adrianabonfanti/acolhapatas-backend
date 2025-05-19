@@ -1,10 +1,11 @@
-import express from 'express';
-import Evento from '../models/Evento.js';
-import authMiddleware from '../middlewares/authMiddleware.js';
-import upload from '../middlewares/upload.js';
-import InteresseEvento from "../models/InteresseEvento.js";
-import sendEmail from "../utils/sendEmail.js"; 
-import Voluntario from "../models/VoluntarioEvento.js";
+const express = require('express');
+const Evento = require('../models/Evento');
+const authMiddleware = require('../middlewares/authMiddleware');
+const upload = require('../middlewares/upload');
+const InteresseEvento = require("../models/InteresseEvento");
+const sendEmail = require("../utils/sendEmail");
+const Voluntario = require("../models/VoluntarioEvento");
+
 
 const router = express.Router();
 
@@ -180,4 +181,5 @@ router.post('/:id/clonar', async (req, res) => {
   }
 });
 
-export default router;
+module.exports = router;
+

@@ -1,12 +1,11 @@
 // controllers/animalController.js
 
-const Animal = require("../models/Animal");
-const LarTemporario = require("../models/LarTemporario");
-const ONG = require("../models/Ong");
-const sendEmail = require("../utils/sendEmail");
+import Animal from '../models/Animal.js';
+import LarTemporario from '../models/LarTemporario.js';
+import ONG from '../models/Ong.js';
+import sendEmail from '../utils/sendEmail.js';
 
-
-async function cadastrarAnimal(req, res) {
+export async function cadastrarAnimal(req, res) {
   try {
     if (!req.body.nome) {
       return res.status(400).json({ error: "Campo nome é obrigatório." });
@@ -79,16 +78,6 @@ async function cadastrarAnimal(req, res) {
   }
 }
 
-module.exports = {
-  cadastrarAnimal,
-};
-
-
-async function atualizarAnimal(req, res) {
+export async function atualizarAnimal(req, res) {
   return res.status(501).json({ error: "Função atualizarAnimal não implementada neste arquivo." });
 }
-
-module.exports = {
-  atualizarAnimal,
-};
-

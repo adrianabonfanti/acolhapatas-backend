@@ -1,10 +1,11 @@
-import express from "express";
-import authMiddleware from "../middlewares/authMiddleware.js";
-import upload from "../middlewares/upload.js";
-import Animal from "../models/Animal.js";
-import { atualizarAnimal } from '../controllers/animalController.js';
-import sendEmail from "../utils/sendEmail.js";
-import Ong from "../models/Ong.js";
+const express = require("express");
+const authMiddleware = require("../middlewares/authMiddleware");
+const upload = require("../middlewares/upload");
+const Animal = require("../models/Animal");
+const { atualizarAnimal } = require('../controllers/animalController');
+const sendEmail = require("../utils/sendEmail");
+const Ong = require("../models/Ong");
+
 
 const router = express.Router();
 
@@ -109,4 +110,5 @@ router.delete("/:id", authMiddleware, async (req, res) => {
   }
 });
 
-export default router;
+module.exports = router;
+

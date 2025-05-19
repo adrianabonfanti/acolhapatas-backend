@@ -1,7 +1,6 @@
-const express = require("express");
-const Voluntario = require("../models/VoluntarioEvento");
-const authMiddleware = require("../middlewares/authMiddleware");
-
+import express from "express";
+import Voluntario from "../models/VoluntarioEvento.js";
+import authMiddleware from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
@@ -32,5 +31,4 @@ router.delete("/:id", async (req, res) => {
   res.json({ msg: "Voluntário removido" });
 });
 
-module.exports = router;
-
+export default router;

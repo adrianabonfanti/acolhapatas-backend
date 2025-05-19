@@ -1,4 +1,5 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
+
 
 const ongSchema = new mongoose.Schema({
   name: { type: String, required: true },
@@ -22,4 +23,4 @@ const ongSchema = new mongoose.Schema({
 
 const Ong = mongoose.model("Ong", ongSchema);
 
-export default Ong;
+module.exports = Ong;
