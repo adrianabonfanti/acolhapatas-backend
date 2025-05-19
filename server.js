@@ -47,7 +47,7 @@ app.use("/", authRoutes);
 app.use("/voluntarios", voluntariosRoutes);
 app.use("/admin", adminLoginRoutes);
 app.use("/admin", adminRoutes);
-app.use("/", animaisOngRoutes);
+app.use("/ongs", animaisOngRoutes);
 
 // Rotas privadas (precisam de token)
 app.use("/animals", authMiddleware, animalsRoutes);
