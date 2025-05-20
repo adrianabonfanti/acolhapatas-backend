@@ -30,7 +30,7 @@ async function cadastrarAnimal(req, res) {
     const novoAnimal = new Animal({
       ...body,
       fotos,
-      ong: req.user._id || req.user.id,
+      ong: req.body.ong,
     });
 
 await novoAnimal.save();
