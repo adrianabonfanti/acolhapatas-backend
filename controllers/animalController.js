@@ -33,8 +33,10 @@ async function cadastrarAnimal(req, res) {
       ong: req.user._id || req.user.id,
     });
 
-  await novoAnimal.save();
-res.status(201).json(novoAnimal); // ✅ responde antes de tudo
+await novoAnimal.save();
+await novoAnimal.populate("ong");
+res.status(201).json(novoAnimal);
+
 
 // Continua o pós-processamento depois da resposta:
 if (novoAnimal.precisaLarTemporario) {
