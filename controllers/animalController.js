@@ -33,46 +33,43 @@ async function cadastrarAnimal(req, res) {
       ong: req.user._id || req.user.id,
     });
 
-    await novoAnimal.save();
+  await novoAnimal.save();
+res.status(201).json(novoAnimal); // ✅ responde antes de tudo
 
-    if (novoAnimal.precisaLarTemporario) {
-      const todosLares = await LarTemporario.find({ approved: true });
+// Continua o pós-processamento depois da resposta:
+if (novoAnimal.precisaLarTemporario) {
+  try {
+    const todosLares = await LarTemporario.find({ approved: true });
 
-      const laresCompatíveis = todosLares.filter((lar) => {
-        return (
-          (!lar.especie || lar.especie.map(e => e.toLowerCase()).includes(novoAnimal.especie.toLowerCase())) &&
-          (!lar.sexo || lar.sexo.toLowerCase() === novoAnimal.sexo.toLowerCase() || lar.sexo === 'ambos' || lar.sexo === 'tanto-faz') &&
-          (!lar.porte || lar.porte.map(p => p.toLowerCase()).includes(novoAnimal.porte.toLowerCase())) &&
-          (!lar.idade || lar.idade.map(i => i.toLowerCase()).includes(novoAnimal.idade.toLowerCase())) &&
-          (!novoAnimal.deficiencia || lar.necessidadesEspeciais) &&
-          (!novoAnimal.usaMedicacao || lar.medicacao)
-        );
-      });
+    const laresCompatíveis = todosLares.filter((lar) => {
+      return (
+        (!lar.especie || lar.especie.map(e => e.toLowerCase()).includes(novoAnimal.especie.toLowerCase())) &&
+        (!lar.sexo || lar.sexo.toLowerCase() === novoAnimal.sexo.toLowerCase() || lar.sexo === 'ambos' || lar.sexo === 'tanto-faz') &&
+        (!lar.porte || lar.porte.map(p => p.toLowerCase()).includes(novoAnimal.porte.toLowerCase())) &&
+        (!lar.idade || lar.idade.map(i => i.toLowerCase()).includes(novoAnimal.idade.toLowerCase())) &&
+        (!novoAnimal.deficiencia || lar.necessidadesEspeciais) &&
+        (!novoAnimal.usaMedicacao || lar.medicacao)
+      );
+    });
 
-      if (laresCompatíveis.length > 0) {
-        const ong = await ONG.findById(String(novoAnimal.ong));
+    if (laresCompatíveis.length > 0) {
+      const ong = await ONG.findById(String(novoAnimal.ong));
 
-        console.log("ONG encontrada:", ong?.nome);
-        console.log("Lares compatíveis:", laresCompatíveis.map(l => l.email));
-
-        for (const lar of laresCompatíveis) {
-          try {
-            console.log(`Enviando e-mail para ${lar.nome} <${lar.email}>`);
-            await sendEmail({
-              name: lar.nome,
-              email: lar.email,
-              phone: lar.telefone,
-              message: `Olá ${lar.nome},\n\nA ONG ${ong?.nome || "a ONG"} acabou de cadastrar um animal que se encaixa no perfil que você aceita:\n\n• Espécie: ${novoAnimal.especie}\n• Idade: ${novoAnimal.idade}\n• Porte: ${novoAnimal.porte}\n• Sexo: ${novoAnimal.sexo}\n\nAcesse sua área logada no AcolhaPatas para saber mais: https://acolhapatas.com.br/login\n\nObrigado por ser um lar temporário! ❤️`
-            });
-            console.log("✔️ E-mail enviado com sucesso");
-          } catch (err) {
-            console.error("❌ Erro ao enviar e-mail para", lar.email, "-", err.message);
-          }
-        }
+      for (const lar of laresCompatíveis) {
+        await sendEmail({
+          name: lar.nome,
+          email: lar.email,
+          phone: lar.telefone,
+          message: `Olá ${lar.nome},\n\nA ONG ${ong?.nome || "a ONG"} acabou de cadastrar um animal que se encaixa no perfil que você aceita:\n\n• Espécie: ${novoAnimal.especie}\n• Idade: ${novoAnimal.idade}\n• Porte: ${novoAnimal.porte}\n• Sexo: ${novoAnimal.sexo}\n\nAcesse sua área logada no AcolhaPatas para saber mais: https://acolhapatas.com.br/login\n\nObrigado por ser um lar temporário! ❤️`
+        });
       }
     }
+  } catch (err) {
+    console.error("Erro no pós-processamento (lares/e-mail):", err.message);
+  }
+}
 
-    res.status(201).json(novoAnimal);
+   
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Erro ao cadastrar animal.' });
