@@ -1,9 +1,6 @@
 require("dotenv").config(); // <- primeira linha
 const express = require("express");
-app.use((req, res, next) => {
-  console.log("📡 ROTA CHAMADA:", req.method, req.url);
-  next();
-});
+
 
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
@@ -31,6 +28,10 @@ const animaisOngRoutes = require("./routes/animalRoutes");
 dotenv.config();
 
 const app = express();
+app.use((req, res, next) => {
+  console.log("📡 ROTA CHAMADA:", req.method, req.url);
+  next();
+});
 app.use(cors({
   origin: "https://www.acolhapatas.com.br",
   credentials: true
