@@ -8,6 +8,8 @@ const sendEmail = require("../utils/sendEmail");
 
 async function cadastrarAnimal(req, res) {
   try {
+    console.log("🔥 ENTROU no controller cadastrarAnimal");
+console.log("req.body.ong:", req.body.ong);
     if (!req.body.nome) {
       return res.status(400).json({ error: "Campo nome é obrigatório." });
     }
