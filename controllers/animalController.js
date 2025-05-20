@@ -34,8 +34,15 @@ async function cadastrarAnimal(req, res) {
     });
 
 await novoAnimal.save();
-await novoAnimal.populate("ong");
+
+try {
+  await novoAnimal.populate("ong");
+} catch (err) {
+  console.warn("Falha ao popular ONG:", err.message);
+}
+
 res.status(201).json(novoAnimal);
+
 
 
 // Continua o pós-processamento depois da resposta:
