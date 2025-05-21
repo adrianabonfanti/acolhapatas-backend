@@ -52,44 +52,35 @@ if (novoAnimal.precisaLarTemporario) {
   console.log("🧪 Tipo de precisaLarTemporario:", typeof novoAnimal.precisaLarTemporario);
 console.log("🧪 Valor de precisaLarTemporario:", novoAnimal.precisaLarTemporario);
 
-  try {
-    console.log("✉️ Preparando para buscar lares compatíveis...");
+ try {
+  console.log("🧪 FORÇANDO ENVIO DE E-MAIL (ignorar precisaLarTemporario)");
 
+  const todosLares = await LarTemporario.find({ approved: true });
+  console.log("🔍 Total de lares encontrados:", todosLares.length);
 
-    const todosLares = await LarTemporario.find({ approved: true });
-    console.log("🔍 Total de lares encontrados:", todosLares.length);
-    const laresCompatíveis = todosLares.filter((lar) => {    
+  const laresCompatíveis = todosLares; // ignora filtro pra testar
+  console.log("🎯 Enviando para todos os lares compatíveis");
 
-      return (
-        (!lar.especie || lar.especie.map(e => e.toLowerCase()).includes(novoAnimal.especie.toLowerCase())) &&
-        (!lar.sexo || lar.sexo.toLowerCase() === novoAnimal.sexo.toLowerCase() || lar.sexo === 'ambos' || lar.sexo === 'tanto-faz') &&
-        (!lar.porte || lar.porte.map(p => p.toLowerCase()).includes(novoAnimal.porte.toLowerCase())) &&
-        (!lar.idade || lar.idade.map(i => i.toLowerCase()).includes(novoAnimal.idade.toLowerCase())) &&
-        (!novoAnimal.deficiencia || lar.necessidadesEspeciais) &&
-        (!novoAnimal.usaMedicacao || lar.medicacao)
-      );
-    });
-console.log("🎯 Lares compatíveis:", laresCompatíveis.length);
-   const resultados = await Promise.allSettled(
-  laresCompatíveis.map(async (lar) => {
-    console.log(`📨 Tentando enviar para: ${lar.email}`);
-    try {
-      await sendEmail({
-        name: lar.nome,
-        email: lar.email,
-        phone: lar.telefone,
-        message: `Olá ${lar.nome}, a ONG ${ong.name} acabou de cadastrar um animal que bate com o seu perfil. Acesse o sistema e veja mais detalhes.`,
-      });
-      console.log("✅ E-mail enviado com sucesso para:", lar.email);
-    } catch (err) {
-      console.error(`❌ Erro ao enviar e-mail para ${lar.email}:`, err.message);
-    }
-  })
-);
+  await Promise.allSettled(
+    laresCompatíveis.map(async (lar) => {
+      console.log(`📨 Tentando enviar para: ${lar.email}`);
+      try {
+        await sendEmail({
+          name: lar.nome,
+          email: lar.email,
+          phone: lar.telefone,
+          message: `Teste: novo animal cadastrado.`,
+        });
+        console.log("✅ E-mail enviado com sucesso para:", lar.email);
+      } catch (err) {
+        console.error(`❌ Erro ao enviar e-mail para ${lar.email}:`, err.message);
+      }
+    })
+  );
+} catch (err) {
+  console.error("❌ Erro no pós-processamento (forçado):", err);
+}
 
-  } catch (err) {
-    console.error("Erro no pós-processamento (lares/e-mail):", err.message);
-  }
 }
 
 // AGORA SIM, envia a resposta
