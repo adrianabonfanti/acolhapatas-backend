@@ -7,7 +7,8 @@ const sendEmail = require("../utils/sendEmail");
 
 
 async function cadastrarAnimal(req, res) {
-  
+  console.log("📦 req.body.precisaLarTemporario:", req.body.precisaLarTemporario);
+
   try {
     console.log("🔥 ENTROU no controller cadastrarAnimal");
 console.log("req.body.ong:", req.body.ong);
@@ -40,6 +41,8 @@ if (!ongId) {
     });
 
 await novoAnimal.save();
+console.log("🐾 novoAnimal.precisaLarTemporario:", novoAnimal.precisaLarTemporario);
+
 console.log("✅ Animal salvo no banco.");
 const animalPopulado = await Animal.findById(novoAnimal._id).populate("ong");
 console.log("✅ Animal populado:", animalPopulado);
