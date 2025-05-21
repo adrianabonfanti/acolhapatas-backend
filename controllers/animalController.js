@@ -15,8 +15,7 @@ console.log("req.body.ong:", req.body.ong);
       return res.status(400).json({ error: "Campo nome é obrigatório." });
     }
 
-    const fotos = req.files ? req.files.map((file) => file.path) : [];
-
+    const fotos = req.file ? [req.file.path] : [];
 
     const body = {
       ...req.body,
