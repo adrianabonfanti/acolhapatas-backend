@@ -1,70 +1,109 @@
+// controllers/animalController.js
 
-const Animal = require("../models/animal");
-const LarTemporario = require("../models/lartemporarios");
-const Ong = require("../models/ongs");
+const Animal = require("../models/Animal");
+const LarTemporario = require("../models/LarTemporario");
+const ONG = require("../models/Ong");
 const sendEmail = require("../utils/sendEmail");
 
-const cadastrarAnimal = async (req, res) => {
+
+async function cadastrarAnimal(req, res) {
+  console.log("📦 req.body.precisaLarTemporario:", req.body.precisaLarTemporario);
+
   try {
-    console.log("🔥 CONTROLLER TESTE: cadastrarAnimal");
-
-    console.log("📦 req.body.precisaLarTemporario:", req.body.precisaLarTemporario);
-
-    const fotos = req.file ? req.file.filename : "";
-    const novoAnimal = new Animal({
-      nome: req.body.nome,
-      especie: req.body.especie,
-      idade: req.body.idade,
-      sexo: req.body.sexo,
-      porte: req.body.porte,
-      descricao: req.body.descricao,
-      castrado: req.body.castrado === "true" || req.body.castrado === true,
-      vacinado: req.body.vacinado === "true" || req.body.vacinado === true,
-      tratamento: req.body.tratamento === "true" || req.body.tratamento === true,
-      medicacao: req.body.medicacao === "true" || req.body.medicacao === true,
-      necessidadesEspeciais:
-        req.body.necessidadesEspeciais === "true" || req.body.necessidadesEspeciais === true,
-      precisaLarTemporario:
-        req.body.precisaLarTemporario === "true" || req.body.precisaLarTemporario === true,
-      status: req.body.status,
-      fotos: fotos,
-      ong: req.body.ong,
-    });
-
-    console.log("🐾 novoAnimal.precisaLarTemporario:", novoAnimal.precisaLarTemporario);
-
-    await novoAnimal.save();
-
-    const ongs = await Ong.find({ _id: req.body.ong });
-    console.log("📢 ONG associada:", ongs[0]?.name || "ONG não encontrada");
-
-    // ENVIO DE TESTE PARA A DIDI SOMENTE
-    try {
-      console.log("🧪 ENVIO DE TESTE: só para adrianahbonfanti@gmail.com");
-
-      const fakeLar = {
-        nome: "Didi Teste",
-        email: "adrianahbonfanti@gmail.com",
-        telefone: "(00) 00000-0000",
-      };
-
-      console.log(`📨 Tentando enviar para: ${fakeLar.email}`);
-      await sendEmail({
-        name: fakeLar.nome,
-        email: fakeLar.email,
-        phone: fakeLar.telefone,
-        message: `⚠️ Este é um teste de envio de e-mail do AcolhaPatas após cadastro de animal.`,
-      });
-      console.log("✅ E-mail de teste enviado com sucesso para:", fakeLar.email);
-    } catch (err) {
-      console.error("❌ Erro ao enviar e-mail de teste:", err.message);
+    console.log("🔥 ENTROU no controller cadastrarAnimal");
+console.log("req.body.ong:", req.body.ong);
+    if (!req.body.nome) {
+      return res.status(400).json({ error: "Campo nome é obrigatório." });
     }
 
-    res.status(200).json({ message: "Animal salvo com sucesso!" });
+    const fotos = req.file ? [req.file.path] : [];
+
+    const body = {
+      ...req.body,
+      nome: String(req.body.nome),
+      castrado: req.body.castrado === "true" || req.body.castrado === true,
+      vacinado: req.body.vacinado === "true" || req.body.vacinado === true,
+      precisaLarTemporario:
+        req.body.precisaLarTemporario === "true" || req.body.precisaLarTemporario === true,
+      necessidadesEspeciais:
+        req.body.necessidadesEspeciais === "true" || req.body.necessidadesEspeciais === true,
+      usaMedicacao: req.body.usaMedicacao === "true" || req.body.usaMedicacao === true,
+      deficiencia: req.body.deficiencia === "true" || req.body.deficiencia === true,
+    };
+const ongId = req.body.ong || req.user?.id;
+if (!ongId) {
+  return res.status(400).json({ error: "ONG não identificada." });
+}
+    const novoAnimal = new Animal({
+      ...body,
+      fotos,
+      ong: ongId,
+    });
+
+await novoAnimal.save();
+console.log("🐾 novoAnimal.precisaLarTemporario:", novoAnimal.precisaLarTemporario);
+
+console.log("✅ Animal salvo no banco.");
+const animalPopulado = await Animal.findById(novoAnimal._id).populate("ong");
+console.log("✅ Animal populado:", animalPopulado);
+
+// ENVIA E-MAILS ANTES DA RESPOSTA
+if (novoAnimal.precisaLarTemporario) {
+  console.log("🧪 Tipo de precisaLarTemporario:", typeof novoAnimal.precisaLarTemporario);
+console.log("🧪 Valor de precisaLarTemporario:", novoAnimal.precisaLarTemporario);
+
+ try {
+  console.log("🧪 FORÇANDO ENVIO DE E-MAIL (ignorar precisaLarTemporario)");
+
+  const todosLares = await LarTemporario.find({ approved: true });
+  console.log("🔍 Total de lares encontrados:", todosLares.length);
+
+  const laresCompatíveis = todosLares; // ignora filtro pra testar
+  console.log("🎯 Enviando para todos os lares compatíveis");
+
+  await Promise.allSettled(
+    laresCompatíveis.map(async (lar) => {
+      console.log(`📨 Tentando enviar para: ${lar.email}`);
+      try {
+        await sendEmail({
+          name: lar.nome,
+          email: lar.email,
+          phone: lar.telefone,
+          message: `Teste: novo animal cadastrado.`,
+        });
+        console.log("✅ E-mail enviado com sucesso para:", lar.email);
+      } catch (err) {
+        console.error(`❌ Erro ao enviar e-mail para ${lar.email}:`, err.message);
+      }
+    })
+  );
+} catch (err) {
+  console.error("❌ Erro no pós-processamento (forçado):", err);
+}
+
+}
+
+// AGORA SIM, envia a resposta
+res.status(201).json(animalPopulado);
+
+
+   
   } catch (error) {
-    console.error("❌ ERRO GERAL ao salvar animal:", error);
-    res.status(500).json({ error: "Erro ao salvar animal." });
+    console.error(error);
+    res.status(500).json({ error: 'Erro ao cadastrar animal.' });
   }
+}
+
+
+
+
+async function atualizarAnimal(req, res) {
+  return res.status(501).json({ error: "Função atualizarAnimal não implementada neste arquivo." });
+}
+
+module.exports = {
+  cadastrarAnimal,
+  atualizarAnimal
 };
 
-module.exports = { cadastrarAnimal };
+
