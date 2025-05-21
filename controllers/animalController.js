@@ -39,8 +39,9 @@ if (!ongId) {
     });
 
 await novoAnimal.save();
+console.log("✅ Animal salvo no banco.");
 const animalPopulado = await Animal.findById(novoAnimal._id).populate("ong");
-
+console.log("✅ Animal populado:", animalPopulado);
 res.status(201).json(animalPopulado);
 
 
@@ -49,6 +50,7 @@ res.status(201).json(animalPopulado);
 // Continua o pós-processamento depois da resposta:
 if (novoAnimal.precisaLarTemporario) {
   try {
+    console.log("✉️ Preparando para buscar lares compatíveis...");
     const todosLares = await LarTemporario.find({ approved: true });
 
     const laresCompatíveis = todosLares.filter((lar) => {
