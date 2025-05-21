@@ -39,14 +39,10 @@ if (!ongId) {
     });
 
 await novoAnimal.save();
+const animalPopulado = await Animal.findById(novoAnimal._id).populate("ong");
 
-try {
-  await novoAnimal.populate("ong");
-} catch (err) {
-  console.warn("Falha ao popular ONG:", err.message);
-}
+res.status(201).json(animalPopulado);
 
-res.status(201).json(novoAnimal);
 
 
 
