@@ -7,8 +7,7 @@ const sendEmail = require("../utils/sendEmail");
 
 
 async function cadastrarAnimal(req, res) {
-  console.log("🔍 req.files recebido:", req.files);
-
+  
   try {
     console.log("🔥 ENTROU no controller cadastrarAnimal");
 console.log("req.body.ong:", req.body.ong);
