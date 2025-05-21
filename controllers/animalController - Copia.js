@@ -7,6 +7,7 @@ const sendEmail = require("../utils/sendEmail");
 
 
 async function cadastrarAnimal(req, res) {
+  
   try {
     console.log("🔥 ENTROU no controller cadastrarAnimal");
 console.log("req.body.ong:", req.body.ong);
@@ -28,31 +29,34 @@ console.log("req.body.ong:", req.body.ong);
       usaMedicacao: req.body.usaMedicacao === "true" || req.body.usaMedicacao === true,
       deficiencia: req.body.deficiencia === "true" || req.body.deficiencia === true,
     };
-
+const ongId = req.body.ong || req.user?.id;
+if (!ongId) {
+  return res.status(400).json({ error: "ONG não identificada." });
+}
     const novoAnimal = new Animal({
       ...body,
       fotos,
-      ong: req.body.ong,
+      ong: ongId,
     });
 
 await novoAnimal.save();
+console.log("✅ Animal salvo no banco.");
+const animalPopulado = await Animal.findById(novoAnimal._id).populate("ong");
+console.log("✅ Animal populado:", animalPopulado);
 
-try {
-  await novoAnimal.populate("ong");
-} catch (err) {
-  console.warn("Falha ao popular ONG:", err.message);
-}
-
-res.status(201).json(novoAnimal);
-
-
-
-// Continua o pós-processamento depois da resposta:
+// ENVIA E-MAILS ANTES DA RESPOSTA
 if (novoAnimal.precisaLarTemporario) {
-  try {
-    const todosLares = await LarTemporario.find({ approved: true });
+  console.log("🧪 Tipo de precisaLarTemporario:", typeof novoAnimal.precisaLarTemporario);
+console.log("🧪 Valor de precisaLarTemporario:", novoAnimal.precisaLarTemporario);
 
-    const laresCompatíveis = todosLares.filter((lar) => {
+  try {
+    console.log("✉️ Preparando para buscar lares compatíveis...");
+
+
+    const todosLares = await LarTemporario.find({ approved: true });
+    console.log("🔍 Total de lares encontrados:", todosLares.length);
+    const laresCompatíveis = todosLares.filter((lar) => {    
+
       return (
         (!lar.especie || lar.especie.map(e => e.toLowerCase()).includes(novoAnimal.especie.toLowerCase())) &&
         (!lar.sexo || lar.sexo.toLowerCase() === novoAnimal.sexo.toLowerCase() || lar.sexo === 'ambos' || lar.sexo === 'tanto-faz') &&
@@ -62,33 +66,35 @@ if (novoAnimal.precisaLarTemporario) {
         (!novoAnimal.usaMedicacao || lar.medicacao)
       );
     });
+console.log("🎯 Lares compatíveis:", laresCompatíveis.length);
+    await Promise.allSettled(
+      laresCompatíveis.map((lar) => {
+        if (!lar.email) {
+          console.warn(`⚠️ Lar ${lar.nome} não tem e-mail. Ignorado.`);
+          return Promise.resolve();
+        }
+console.log(`📨 Tentando enviar para: ${lar.email}`);
 
-    if (laresCompatíveis.length > 0) {
-    let nomeDaOng = "a ONG";
-
-try {
-  const ong = await ONG.findById(String(novoAnimal.ong));
-  if (ong && ong.nome) {
-    nomeDaOng = ong.nome;
-  }
-} catch (erroOng) {
-  console.warn("Erro ao buscar nome da ONG:", erroOng.message);
-}
-
-
-      for (const lar of laresCompatíveis) {
-        await sendEmail({
+        return sendEmail({
           name: lar.nome,
           email: lar.email,
           phone: lar.telefone,
-          message: `Olá ${lar.nome},\n\nA ONG ${nomeDaOng} acabou de cadastrar um animal que se encaixa no perfil que você aceita:\n\n• Espécie: ${novoAnimal.especie}\n• Idade: ${novoAnimal.idade}\n• Porte: ${novoAnimal.porte}\n• Sexo: ${novoAnimal.sexo}\n\nAcesse sua área logada no AcolhaPatas para saber mais: https://acolhapatas.com.br/login\n\nObrigado por ser um lar temporário! ❤️`
-        });
-      }
-    }
+          message: `Olá ${lar.nome},\n\nUm novo animal foi cadastrado e se encaixa no perfil que você aceita:\n\n• Espécie: ${novoAnimal.especie}\n• Idade: ${novoAnimal.idade}\n• Porte: ${novoAnimal.porte}\n• Sexo: ${novoAnimal.sexo}\n\nAcesse sua área logada no AcolhaPatas para saber mais: https://acolhapatas.com.br/login\n\nObrigado por ser um lar temporário! ❤️`
+       }).then(() => {
+  console.log("✅ E-mail enviado SEM erro para:", lar.email);
+}).catch((err) => {
+  console.error(`❌ Erro real no envio para ${lar.email}:`, err.message);
+});
+      })
+    );
   } catch (err) {
     console.error("Erro no pós-processamento (lares/e-mail):", err.message);
   }
 }
+
+// AGORA SIM, envia a resposta
+res.status(201).json(animalPopulado);
+
 
    
   } catch (error) {
