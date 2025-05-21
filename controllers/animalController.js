@@ -45,6 +45,9 @@ console.log("✅ Animal populado:", animalPopulado);
 
 // ENVIA E-MAILS ANTES DA RESPOSTA
 if (novoAnimal.precisaLarTemporario) {
+  console.log("🧪 Tipo de precisaLarTemporario:", typeof novoAnimal.precisaLarTemporario);
+console.log("🧪 Valor de precisaLarTemporario:", novoAnimal.precisaLarTemporario);
+
   try {
     console.log("✉️ Preparando para buscar lares compatíveis...");
     const todosLares = await LarTemporario.find({ approved: true });
