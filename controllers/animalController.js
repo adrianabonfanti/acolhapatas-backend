@@ -78,15 +78,24 @@ try {
 
 
 
-      for (const lar of laresCompatíveis) {
-        await sendEmail({
-          name: lar.nome,
-          email: lar.email,
-          phone: lar.telefone,
-          message: `Olá ${lar.nome},\n\nUm novo animal foi cadastrado e se encaixa no perfil que você aceita:\n\n• Espécie: ${novoAnimal.especie}\n• Idade: ${novoAnimal.idade}\n• Porte: ${novoAnimal.porte}\n• Sexo: ${novoAnimal.sexo}\n\nAcesse sua área logada no AcolhaPatas para saber mais: https://acolhapatas.com.br/login\n\nObrigado por ser um lar temporário! ❤️`
+     await Promise.allSettled(
+  laresCompatíveis.map((lar) => {
+    if (!lar.email) {
+      console.warn(`⚠️ Lar ${lar.nome} não tem e-mail. Ignorado.`);
+      return Promise.resolve();
+    }
 
-        });
-      }
+    return sendEmail({
+      name: lar.nome,
+      email: lar.email,
+      phone: lar.telefone,
+      message: `Olá ${lar.nome},\n\nUm novo animal foi cadastrado e se encaixa no perfil que você aceita:\n\n• Espécie: ${novoAnimal.especie}\n• Idade: ${novoAnimal.idade}\n• Porte: ${novoAnimal.porte}\n• Sexo: ${novoAnimal.sexo}\n\nAcesse sua área logada no AcolhaPatas para saber mais: https://acolhapatas.com.br/login\n\nObrigado por ser um lar temporário! ❤️`
+    }).catch((err) => {
+      console.error(`❌ Erro ao enviar e-mail para ${lar.nome}:`, err.message);
+    });
+  })
+);
+
     }
   } catch (err) {
     console.error("Erro no pós-processamento (lares/e-mail):", err.message);
