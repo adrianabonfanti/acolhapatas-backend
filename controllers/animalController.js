@@ -32,7 +32,7 @@ console.log("req.body.ong:", req.body.ong);
     const novoAnimal = new Animal({
       ...body,
       fotos,
-      ong: req.user.id,
+      ong: req.body.ong,
     });
 
 await novoAnimal.save();
