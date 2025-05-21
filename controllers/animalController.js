@@ -80,9 +80,11 @@ console.log(`📨 Tentando enviar para: ${lar.email}`);
           email: lar.email,
           phone: lar.telefone,
           message: `Olá ${lar.nome},\n\nUm novo animal foi cadastrado e se encaixa no perfil que você aceita:\n\n• Espécie: ${novoAnimal.especie}\n• Idade: ${novoAnimal.idade}\n• Porte: ${novoAnimal.porte}\n• Sexo: ${novoAnimal.sexo}\n\nAcesse sua área logada no AcolhaPatas para saber mais: https://acolhapatas.com.br/login\n\nObrigado por ser um lar temporário! ❤️`
-        }).catch((err) => {
-          console.error(`❌ Erro ao enviar e-mail para ${lar.nome}:`, err.message);
-        });
+       }).then(() => {
+  console.log("✅ E-mail enviado SEM erro para:", lar.email);
+}).catch((err) => {
+  console.error(`❌ Erro real no envio para ${lar.email}:`, err.message);
+});
       })
     );
   } catch (err) {
