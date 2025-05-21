@@ -51,9 +51,13 @@ console.log("🧪 Valor de precisaLarTemporario:", novoAnimal.precisaLarTemporar
 
   try {
     console.log("✉️ Preparando para buscar lares compatíveis...");
+    console.log("🔍 Total de lares encontrados:", todosLares.length);
+
     const todosLares = await LarTemporario.find({ approved: true });
 
     const laresCompatíveis = todosLares.filter((lar) => {
+      console.log("🎯 Lares compatíveis:", laresCompatíveis.length);
+
       return (
         (!lar.especie || lar.especie.map(e => e.toLowerCase()).includes(novoAnimal.especie.toLowerCase())) &&
         (!lar.sexo || lar.sexo.toLowerCase() === novoAnimal.sexo.toLowerCase() || lar.sexo === 'ambos' || lar.sexo === 'tanto-faz') &&
@@ -70,6 +74,7 @@ console.log("🧪 Valor de precisaLarTemporario:", novoAnimal.precisaLarTemporar
           console.warn(`⚠️ Lar ${lar.nome} não tem e-mail. Ignorado.`);
           return Promise.resolve();
         }
+console.log(`📨 Tentando enviar para: ${lar.email}`);
 
         return sendEmail({
           name: lar.nome,
