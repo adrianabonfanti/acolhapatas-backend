@@ -57,8 +57,9 @@ router.post("/", authMiddleware, upload.single("fotos"), async (req, res, next) 
   
     await novoAnimal.save();
     
-    await salvo.populate("ong");
-res.status(201).json(salvo);
+  await novoAnimal.populate("ong");
+res.status(201).json(novoAnimal);
+
 
   } catch (err) {
     next(err);
