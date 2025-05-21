@@ -42,12 +42,8 @@ await novoAnimal.save();
 console.log("✅ Animal salvo no banco.");
 const animalPopulado = await Animal.findById(novoAnimal._id).populate("ong");
 console.log("✅ Animal populado:", animalPopulado);
-res.status(201).json(animalPopulado);
 
-
-
-
-// Continua o pós-processamento depois da resposta:
+// ENVIA E-MAILS ANTES DA RESPOSTA
 if (novoAnimal.precisaLarTemporario) {
   try {
     console.log("✉️ Preparando para buscar lares compatíveis...");
@@ -64,45 +60,31 @@ if (novoAnimal.precisaLarTemporario) {
       );
     });
 
-    if (laresCompatíveis.length > 0) {
-/*     let nomeDaOng = "a ONG";
+    await Promise.allSettled(
+      laresCompatíveis.map((lar) => {
+        if (!lar.email) {
+          console.warn(`⚠️ Lar ${lar.nome} não tem e-mail. Ignorado.`);
+          return Promise.resolve();
+        }
 
-try {
-  const ong = await ONG.findById(String(novoAnimal.ong));
-  if (ong?.name) {
-    nomeDaOng = ong.name;
-  } else {
-    console.warn("⚠️ ONG encontrada, mas sem campo 'name'");
-  }
-} catch (erroOng) {
-  console.warn("❌ Erro ao buscar nome da ONG:", erroOng.message);
-} */
-
-
-
-     await Promise.allSettled(
-  laresCompatíveis.map((lar) => {
-    if (!lar.email) {
-      console.warn(`⚠️ Lar ${lar.nome} não tem e-mail. Ignorado.`);
-      return Promise.resolve();
-    }
-
-    return sendEmail({
-      name: lar.nome,
-      email: lar.email,
-      phone: lar.telefone,
-      message: `Olá ${lar.nome},\n\nUm novo animal foi cadastrado e se encaixa no perfil que você aceita:\n\n• Espécie: ${novoAnimal.especie}\n• Idade: ${novoAnimal.idade}\n• Porte: ${novoAnimal.porte}\n• Sexo: ${novoAnimal.sexo}\n\nAcesse sua área logada no AcolhaPatas para saber mais: https://acolhapatas.com.br/login\n\nObrigado por ser um lar temporário! ❤️`
-    }).catch((err) => {
-      console.error(`❌ Erro ao enviar e-mail para ${lar.nome}:`, err.message);
-    });
-  })
-);
-
-    }
+        return sendEmail({
+          name: lar.nome,
+          email: lar.email,
+          phone: lar.telefone,
+          message: `Olá ${lar.nome},\n\nUm novo animal foi cadastrado e se encaixa no perfil que você aceita:\n\n• Espécie: ${novoAnimal.especie}\n• Idade: ${novoAnimal.idade}\n• Porte: ${novoAnimal.porte}\n• Sexo: ${novoAnimal.sexo}\n\nAcesse sua área logada no AcolhaPatas para saber mais: https://acolhapatas.com.br/login\n\nObrigado por ser um lar temporário! ❤️`
+        }).catch((err) => {
+          console.error(`❌ Erro ao enviar e-mail para ${lar.nome}:`, err.message);
+        });
+      })
+    );
   } catch (err) {
     console.error("Erro no pós-processamento (lares/e-mail):", err.message);
   }
 }
+
+// AGORA SIM, envia a resposta
+res.status(201).json(animalPopulado);
+
 
    
   } catch (error) {
