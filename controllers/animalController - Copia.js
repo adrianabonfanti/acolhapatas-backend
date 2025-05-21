@@ -28,14 +28,11 @@ console.log("req.body.ong:", req.body.ong);
       usaMedicacao: req.body.usaMedicacao === "true" || req.body.usaMedicacao === true,
       deficiencia: req.body.deficiencia === "true" || req.body.deficiencia === true,
     };
-const ongId = req.body.ong || req.user?.id;
-if (!ongId) {
-  return res.status(400).json({ error: "ONG não identificada." });
-}
+
     const novoAnimal = new Animal({
       ...body,
       fotos,
-      ong: ongId,
+      ong: req.body.ong,
     });
 
 await novoAnimal.save();
