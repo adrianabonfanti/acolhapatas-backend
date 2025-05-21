@@ -7,7 +7,8 @@ const sendEmail = require("../utils/sendEmail");
 
 
 async function cadastrarAnimal(req, res) {
-  
+  console.log("📦 req.body.precisaLarTemporario:", req.body.precisaLarTemporario);
+
   try {
     console.log("🔥 ENTROU no controller cadastrarAnimal");
 console.log("req.body.ong:", req.body.ong);
@@ -40,6 +41,8 @@ if (!ongId) {
     });
 
 await novoAnimal.save();
+console.log("🐾 novoAnimal.precisaLarTemporario:", novoAnimal.precisaLarTemporario);
+
 console.log("✅ Animal salvo no banco.");
 const animalPopulado = await Animal.findById(novoAnimal._id).populate("ong");
 console.log("✅ Animal populado:", animalPopulado);
@@ -49,47 +52,35 @@ if (novoAnimal.precisaLarTemporario) {
   console.log("🧪 Tipo de precisaLarTemporario:", typeof novoAnimal.precisaLarTemporario);
 console.log("🧪 Valor de precisaLarTemporario:", novoAnimal.precisaLarTemporario);
 
-  try {
-    console.log("✉️ Preparando para buscar lares compatíveis...");
+ try {
+  console.log("🧪 FORÇANDO ENVIO DE E-MAIL (ignorar precisaLarTemporario)");
 
+  const todosLares = await LarTemporario.find({ approved: true });
+  console.log("🔍 Total de lares encontrados:", todosLares.length);
 
-    const todosLares = await LarTemporario.find({ approved: true });
-    console.log("🔍 Total de lares encontrados:", todosLares.length);
-    const laresCompatíveis = todosLares.filter((lar) => {    
+  const laresCompatíveis = todosLares; // ignora filtro pra testar
+  console.log("🎯 Enviando para todos os lares compatíveis");
 
-      return (
-        (!lar.especie || lar.especie.map(e => e.toLowerCase()).includes(novoAnimal.especie.toLowerCase())) &&
-        (!lar.sexo || lar.sexo.toLowerCase() === novoAnimal.sexo.toLowerCase() || lar.sexo === 'ambos' || lar.sexo === 'tanto-faz') &&
-        (!lar.porte || lar.porte.map(p => p.toLowerCase()).includes(novoAnimal.porte.toLowerCase())) &&
-        (!lar.idade || lar.idade.map(i => i.toLowerCase()).includes(novoAnimal.idade.toLowerCase())) &&
-        (!novoAnimal.deficiencia || lar.necessidadesEspeciais) &&
-        (!novoAnimal.usaMedicacao || lar.medicacao)
-      );
-    });
-console.log("🎯 Lares compatíveis:", laresCompatíveis.length);
-    await Promise.allSettled(
-      laresCompatíveis.map((lar) => {
-        if (!lar.email) {
-          console.warn(`⚠️ Lar ${lar.nome} não tem e-mail. Ignorado.`);
-          return Promise.resolve();
-        }
-console.log(`📨 Tentando enviar para: ${lar.email}`);
-
-        return sendEmail({
+  await Promise.allSettled(
+    laresCompatíveis.map(async (lar) => {
+      console.log(`📨 Tentando enviar para: ${lar.email}`);
+      try {
+        await sendEmail({
           name: lar.nome,
           email: lar.email,
           phone: lar.telefone,
-          message: `Olá ${lar.nome},\n\nUm novo animal foi cadastrado e se encaixa no perfil que você aceita:\n\n• Espécie: ${novoAnimal.especie}\n• Idade: ${novoAnimal.idade}\n• Porte: ${novoAnimal.porte}\n• Sexo: ${novoAnimal.sexo}\n\nAcesse sua área logada no AcolhaPatas para saber mais: https://acolhapatas.com.br/login\n\nObrigado por ser um lar temporário! ❤️`
-       }).then(() => {
-  console.log("✅ E-mail enviado SEM erro para:", lar.email);
-}).catch((err) => {
-  console.error(`❌ Erro real no envio para ${lar.email}:`, err.message);
-});
-      })
-    );
-  } catch (err) {
-    console.error("Erro no pós-processamento (lares/e-mail):", err.message);
-  }
+          message: `Teste: novo animal cadastrado.`,
+        });
+        console.log("✅ E-mail enviado com sucesso para:", lar.email);
+      } catch (err) {
+        console.error(`❌ Erro ao enviar e-mail para ${lar.email}:`, err.message);
+      }
+    })
+  );
+} catch (err) {
+  console.error("❌ Erro no pós-processamento (forçado):", err);
+}
+
 }
 
 // AGORA SIM, envia a resposta
