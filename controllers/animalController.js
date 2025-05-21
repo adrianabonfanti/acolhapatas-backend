@@ -63,7 +63,7 @@ if (novoAnimal.precisaLarTemporario) {
     });
 
     if (laresCompatíveis.length > 0) {
-    let nomeDaOng = "a ONG";
+/*     let nomeDaOng = "a ONG";
 
 try {
   const ong = await ONG.findById(String(novoAnimal.ong));
@@ -74,7 +74,7 @@ try {
   }
 } catch (erroOng) {
   console.warn("❌ Erro ao buscar nome da ONG:", erroOng.message);
-}
+} */
 
 
 
@@ -83,7 +83,8 @@ try {
           name: lar.nome,
           email: lar.email,
           phone: lar.telefone,
-          message: `Olá ${lar.nome},\n\nA ONG ${nomeDaOng} acabou de cadastrar um animal que se encaixa no perfil que você aceita:\n\n• Espécie: ${novoAnimal.especie}\n• Idade: ${novoAnimal.idade}\n• Porte: ${novoAnimal.porte}\n• Sexo: ${novoAnimal.sexo}\n\nAcesse sua área logada no AcolhaPatas para saber mais: https://acolhapatas.com.br/login\n\nObrigado por ser um lar temporário! ❤️`
+          message: `Olá ${lar.nome},\n\nUm novo animal foi cadastrado e se encaixa no perfil que você aceita:\n\n• Espécie: ${novoAnimal.especie}\n• Idade: ${novoAnimal.idade}\n• Porte: ${novoAnimal.porte}\n• Sexo: ${novoAnimal.sexo}\n\nAcesse sua área logada no AcolhaPatas para saber mais: https://acolhapatas.com.br/login\n\nObrigado por ser um lar temporário! ❤️`
+
         });
       }
     }
