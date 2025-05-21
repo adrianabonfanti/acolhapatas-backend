@@ -67,12 +67,15 @@ if (novoAnimal.precisaLarTemporario) {
 
 try {
   const ong = await ONG.findById(String(novoAnimal.ong));
-  if (ong && ong.nome) {
-    nomeDaOng = ong.nome;
+  if (ong?.name) {
+    nomeDaOng = ong.name;
+  } else {
+    console.warn("⚠️ ONG encontrada, mas sem campo 'name'");
   }
 } catch (erroOng) {
-  console.warn("Erro ao buscar nome da ONG:", erroOng.message);
+  console.warn("❌ Erro ao buscar nome da ONG:", erroOng.message);
 }
+
 
 
       for (const lar of laresCompatíveis) {
