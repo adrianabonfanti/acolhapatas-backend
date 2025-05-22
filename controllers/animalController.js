@@ -61,22 +61,34 @@ console.log("🧪 Valor de precisaLarTemporario:", novoAnimal.precisaLarTemporar
   const laresCompatíveis = todosLares; // ignora filtro pra testar
   console.log("🎯 Enviando para todos os lares compatíveis");
 
-  await Promise.allSettled(
-    laresCompatíveis.map(async (lar) => {
-      console.log(`📨 Tentando enviar para: ${lar.email}`);
-      try {
-        await sendEmail({
-          name: lar.nome,
-          email: lar.email,
-          phone: lar.telefone,
-          message: `Teste: novo animal cadastrado.`,
-        });
-        console.log("✅ E-mail enviado com sucesso para:", lar.email);
-      } catch (err) {
-        console.error(`❌ Erro ao enviar e-mail para ${lar.email}:`, err.message);
-      }
-    })
-  );
+await Promise.allSettled(
+  laresCompatíveis.map(async (lar) => {
+    console.log(`📨 Tentando enviar para: ${lar.email}`);
+    try {
+      await sendEmail({
+        name: lar.nome,
+        email: lar.email,
+        phone: lar.telefone,
+        subject: `🐾 Novo animal precisa de lar temporário!`,
+        html: `
+          <h2>Olá ${lar.nome}!</h2>
+          <p>Uma ONG cadastrou um animal que precisa de lar temporário.</p>
+          <p><strong>Animal:</strong> ${animalPopulado.nome}</p>
+          <p><strong>ONG responsável:</strong> ${animalPopulado.ong?.name || "ONG não identificada"}</p>
+          <p><strong>Descrição:</strong> ${animalPopulado.descricao || "Sem descrição fornecida"}</p>
+          <p>Se você puder ajudar, acesse sua área logada do sistema AcolhaPatas:</p>
+          <p><a href="https://acolhapatas.com.br/login" target="_blank">https://acolhapatas.com.br/login</a></p>
+          <br />
+          <p>Obrigado por fazer parte dessa rede de apoio! 💚</p>
+        `
+      });
+      console.log("✅ E-mail enviado com sucesso para:", lar.email);
+    } catch (err) {
+      console.error(`❌ Erro ao enviar e-mail para ${lar.email}:`, err.message);
+    }
+  })
+);
+
 } catch (err) {
   console.error("❌ Erro no pós-processamento (forçado):", err);
 }
