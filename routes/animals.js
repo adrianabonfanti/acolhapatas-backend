@@ -6,6 +6,7 @@ const { atualizarAnimal } = require('../controllers/animalController');
 const sendEmail = require("../utils/sendEmail");
 const Ong = require("../models/Ong");
 const LarTemporario = require("../models/LarTemporario");
+console.log("🔥 ESTE É O ANIMALS.JS REAL sendo executado");
 
 
 const router = express.Router();
