@@ -58,32 +58,35 @@ router.post("/", authMiddleware, upload.single("fotos"), async (req, res, next) 
 
   
     await novoAnimal.save();
-    
-  await novoAnimal.populate("ong");
-  if (novoAnimal.precisaLarTemporario) {
+await novoAnimal.populate("ong");
+
+if (novoAnimal.precisaLarTemporario === true) {
   try {
     const lares = await LarTemporario.find({ approved: true });
     const ong = await Ong.findById(novoAnimal.ong);
 
-    await Promise.allSettled(lares.map(async (lar) => {
-      await sendEmail({
-        name: lar.nome,
-        email: lar.email,
-        subject: "🐾 Novo animal precisa de lar temporário!",
-        html: `
-          <h2>Olá ${lar.nome}!</h2>
-          <p>Uma ONG cadastrou um animal que precisa de lar temporário.</p>
-          <p><strong>Animal:</strong> ${novoAnimal.nome}</p>
-          <p><strong>ONG responsável:</strong> ${ong?.name || "ONG não identificada"}</p>
-          <p><strong>Descrição:</strong> ${novoAnimal.descricao || "Sem descrição"}</p>
-          <p><a href="https://acolhapatas.com.br/login" target="_blank">Acesse sua área</a></p>
-        `
-      });
-    }));
+    await Promise.allSettled(
+      lares.map(async (lar) => {
+        await sendEmail({
+          name: lar.nome,
+          email: lar.email,
+          subject: "🐾 Novo animal precisa de lar temporário!",
+          html: `
+            <h2>Olá ${lar.nome}!</h2>
+            <p>Uma ONG cadastrou um animal que precisa de lar temporário.</p>
+            <p><strong>Animal:</strong> ${novoAnimal.nome}</p>
+            <p><strong>ONG responsável:</strong> ${ong?.name || "ONG não identificada"}</p>
+            <p><strong>Descrição:</strong> ${novoAnimal.descricao || "Sem descrição"}</p>
+            <p><a href="https://acolhapatas.com.br/login" target="_blank">Acesse sua área</a></p>
+          `
+        });
+      })
+    );
   } catch (err) {
-    console.error("❌ Erro ao tentar enviar e-mails:", err);
+    console.error("❌ Erro ao tentar enviar e-mails:", err.message);
   }
 }
+
 
 res.status(201).json(novoAnimal);
 
