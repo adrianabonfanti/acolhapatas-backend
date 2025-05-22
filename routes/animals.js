@@ -56,9 +56,11 @@ router.post("/", authMiddleware, upload.single("fotos"), async (req, res, next) 
       ong: req.user.id,
     });
 
-  
+  console.log("🐛 REQ.BODY:", req.body);
+
     await novoAnimal.save();
 await novoAnimal.populate("ong");
+console.log("🔥 VALOR precisaLarTemporario:", novoAnimal.precisaLarTemporario);
 
 if (novoAnimal.precisaLarTemporario === true) {
   try {
