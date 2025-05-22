@@ -56,7 +56,29 @@ router.post("/", authMiddleware, upload.single("fotos"), async (req, res, next) 
 
   
     await novoAnimal.save();
-    
+    if (novoAnimal.precisaLarTemporario) {
+  // carrega lares aprovados
+  const lares = await LarTemporario.find({ approved: true });
+
+  // carrega nome da ONG
+  const ong = await Ong.findById(novoAnimal.ong);
+
+  await Promise.allSettled(lares.map(async (lar) => {
+    await sendEmail({
+      name: lar.nome,
+      email: lar.email,
+      subject: "🐾 Novo animal precisa de lar temporário!",
+      html: `
+        <h2>Olá ${lar.nome}!</h2>
+        <p>A ONG <strong>${ong?.name || "não identificada"}</strong> cadastrou um animal que precisa de lar temporário.</p>
+        <p><strong>Animal:</strong> ${novoAnimal.nome}</p>
+        <p><strong>Descrição:</strong> ${novoAnimal.descricao || "Sem descrição"}</p>
+        <a href="https://acolhapatas.com.br/login" target="_blank">Clique aqui para acessar</a>
+      `
+    });
+  }));
+}
+
   await novoAnimal.populate("ong");
 res.status(201).json(novoAnimal);
 
