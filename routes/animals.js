@@ -5,6 +5,7 @@ const Animal = require("../models/Animal");
 const { atualizarAnimal } = require('../controllers/animalController');
 const sendEmail = require("../utils/sendEmail");
 const Ong = require("../models/Ong");
+const LarTemporario = require("../models/LarTemporario");
 
 
 const router = express.Router();
