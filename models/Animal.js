@@ -38,6 +38,15 @@ const AnimalSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  status: {
+  type: String,
+  enum: ["ativo", "adotado", "pausado"],
+  default: "ativo"
+},
+achouLar: {
+  type: Boolean,
+  default: false
+},
   descricao: {
     type: String
   },

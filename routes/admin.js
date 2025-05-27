@@ -25,10 +25,10 @@ router.put("/ongs/aprovar/:id", async (req, res) => {
 
     if (ong?.email) {
       await sendEmail({
-        name: ong.nome,
+        name: ong.name,
         email: ong.email,
         phone: ong.telefone || "-",
-        message: `Olá ${ong.nome},\n\nSeu cadastro no AcolhaPatas foi aprovado!\nVocê já pode acessar a área logada com seu e-mail e senha cadastrados.`
+        message: `Olá ${ong.name},\n\nSeu cadastro no AcolhaPatas foi aprovado!\nVocê já pode acessar a área logada com seu e-mail e senha cadastrados.`
       });
     }
 
