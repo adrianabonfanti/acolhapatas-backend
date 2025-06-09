@@ -1,11 +1,11 @@
 const express = require('express');
 const Evento = require('../models/Evento');
+const Ong = require('../models/Ong');
 const authMiddleware = require('../middlewares/authMiddleware');
 const upload = require('../middlewares/upload');
 const InteresseEvento = require("../models/InteresseEvento");
 const sendEmail = require("../utils/sendEmail");
 const Voluntario = require("../models/VoluntarioEvento");
-
 
 const router = express.Router();
 
@@ -13,9 +13,9 @@ const router = express.Router();
 router.get("/public", async (req, res) => {
   try {
     const hoje = new Date().toISOString().slice(0, 10);
-    const eventos = await Evento.find({ 
+    const eventos = await Evento.find({
       data: { $gte: hoje },
-      ong: { $ne: null } // ✅ apenas eventos com ONG associada
+      ong: { $ne: null }
     }).sort({ data: 1 }).populate("ong");
 
     res.json(eventos);
@@ -25,17 +25,58 @@ router.get("/public", async (req, res) => {
   }
 });
 
+// POST: Voluntário se inscrevendo no evento
+router.post("/voluntarios", async (req, res) => {
+  try {
+    const { nome, telefone, evento } = req.body;
+
+    const eventoEncontrado = await Evento.findById(evento).populate("ong");
+    if (!eventoEncontrado) return res.status(404).json({ erro: "Evento não encontrado" });
+
+    const emailONG = eventoEncontrado.ong?.email;
+    if (!emailONG) {
+      return res.status(400).json({ erro: "ONG não possui e-mail cadastrado" });
+    }
+
+    // Salvar o voluntário
+    await Voluntario.create({ nome, telefone, evento });
+
+    const [ano, mes, dia] = eventoEncontrado.data.split("-");
+    const dataFormatada = `${dia}/${mes}/${ano}`;
+
+    const mensagem = `Quero ser voluntário para o evento ${eventoEncontrado.nome}
+
+Data: ${dataFormatada}
+Local: ${eventoEncontrado.endereco || "Endereço não informado"}
+Cidade: ${eventoEncontrado.cidade} - ${eventoEncontrado.estado}`;
+
+    await sendEmail({
+      name: nome,
+      email: emailONG,
+      phone: telefone,
+      message: mensagem,
+      subject: `Novo voluntário para evento: ${eventoEncontrado.nome}`
+    });
+
+    res.status(201).json({ msg: "Voluntário salvo e notificado com sucesso." });
+  } catch (err) {
+    console.error("💥 ERRO AO SALVAR VOLUNTÁRIO:", err);
+    res.status(500).json({ erro: "Erro ao salvar voluntário", detalhes: err.message });
+  }
+});
+
 router.use(authMiddleware);
 
 // POST: Criar novo evento
 router.post('/', upload.single('imagem'), async (req, res) => {
   try {
     const imagem = req.file ? req.file.path : null;
-    // Converte a data para formato ISO se estiver em formato brasileiro
+
     if (req.body.data && req.body.data.includes("/")) {
       const [dia, mes, ano] = req.body.data.split("/");
       req.body.data = `${ano}-${mes}-${dia}`;
-    } 
+    }
+
     const novoEvento = new Evento({
       ...req.body,
       ong: req.user.id,
@@ -44,15 +85,14 @@ router.post('/', upload.single('imagem'), async (req, res) => {
 
     const salvo = await novoEvento.save();
     salvo.cidade = salvo.cidade?.trim() || "";
-salvo.estado = salvo.estado?.trim().toUpperCase() || "";
- await salvo.populate("ong");
+    salvo.estado = salvo.estado?.trim().toUpperCase() || "";
+    await salvo.populate("ong");
+
     const interessados = await InteresseEvento.find();
 
     for (const i of interessados) {
-     
-          const correspondeCidade = i.cidade === "" || i.cidade.toLowerCase() === salvo.cidade.toLowerCase();
-          const correspondeEstado = i.estado === "" || i.estado.toUpperCase() === salvo.estado.toUpperCase();
-
+      const correspondeCidade = i.cidade === "" || i.cidade.toLowerCase() === salvo.cidade.toLowerCase();
+      const correspondeEstado = i.estado === "" || i.estado.toUpperCase() === salvo.estado.toUpperCase();
 
       if (correspondeCidade && correspondeEstado) {
         const [ano, mes, dia] = salvo.data.split("-");
@@ -62,7 +102,7 @@ salvo.estado = salvo.estado?.trim().toUpperCase() || "";
           <p>Olá ${i.nome},</p>
           <p>Um novo evento pode te interessar:</p>
           <ul>
-          <p><strong>ONG responsável:</strong> ${salvo.ong?.nome || salvo.ong?.name || "ONG não identificada"}</p>
+            <p><strong>ONG responsável:</strong> ${salvo.ong?.nome || salvo.ong?.name || "ONG não identificada"}</p>
             <li><strong>${salvo.nome}</strong></li>
             <li><strong>Data:</strong> ${dataFormatada}</li>
             <li><strong>Horário:</strong> ${salvo.horaInicio} às ${salvo.horaFim}</li>
@@ -80,7 +120,7 @@ salvo.estado = salvo.estado?.trim().toUpperCase() || "";
         await sendEmail({
           name: i.nome,
           email: i.email,
-           subject: `Novo evento do AcolhaPatas: ${salvo.nome}`,
+          subject: `Novo evento do AcolhaPatas: ${salvo.nome}`,
           html: conteudo
         });
       }
@@ -92,6 +132,7 @@ salvo.estado = salvo.estado?.trim().toUpperCase() || "";
     res.status(500).json({ erro: 'Erro ao salvar evento.', detalhes: err.message });
   }
 });
+
 // GET: Buscar todos os eventos (admin)
 router.get("/todos", async (req, res) => {
   try {
@@ -128,13 +169,8 @@ router.get('/', async (req, res) => {
 // PUT: Editar evento
 router.put('/:id', upload.single('imagem'), async (req, res) => {
   try {
-    const update = {
-      ...req.body
-    };
-
-    if (req.file) {
-      update.imagem = req.file.path;
-    }
+    const update = { ...req.body };
+    if (req.file) update.imagem = req.file.path;
 
     const evento = await Evento.findOneAndUpdate(
       { _id: req.params.id, ong: req.user.id },
@@ -182,4 +218,3 @@ router.post('/:id/clonar', async (req, res) => {
 });
 
 module.exports = router;
-
